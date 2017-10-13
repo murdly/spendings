@@ -31,7 +31,12 @@ public interface TransactionDao {
             "LEFT JOIN currencies ON transactions.currency_id = currencies.id " +
             "WHERE transactions.date BETWEEN :from AND :to " +
             "GROUP BY transactions.currency_id ORDER BY total")
-    LiveData<List<PeriodSpendings>> allByCurrency(Date from, Date to);
+    LiveData<List<PeriodSpendings>> byCurrencyBetween(Date from, Date to);
+
+    @Query("SELECT currencies.name, currencies.symbol, SUM (transactions.value) AS total FROM transactions " +
+            "LEFT JOIN currencies ON transactions.currency_id = currencies.id " +
+            "GROUP BY transactions.currency_id ORDER BY total")
+    LiveData<List<PeriodSpendings>> byCurrency();
 
 
     @Query("SELECT * FROM transactions ORDER BY title ASC")

@@ -7,42 +7,16 @@
     android:layout_height="match_parent"
     tools:context="com.akarbowy.spendingsapp.MainActivity">
 
-
-    <!--<android.support.v4.view.ViewPager-->
-    <!--android:id="@+id/pager"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="0dp"-->
-    <!--app:layout_constraintBottom_toTopOf="@+id/guideline"-->
-    <!--app:layout_constraintEnd_toEndOf="parent"-->
-    <!--app:layout_constraintStart_toStartOf="parent"-->
-    <!--app:layout_constraintTop_toTopOf="parent">-->
-
-    <!--<android.support.design.widget.TabLayout-->
-    <!--android:id="@+id/tabs"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="40dp"-->
-    <!--android:layout_marginEnd="8dp"-->
-    <!--android:layout_marginStart="8dp"-->
-    <!--android:layout_marginTop="8dp"-->
-    <!--app:tabSelectedTextColor="@color/colorAccent"-->
-    <!--android:background="@color/colorAccent"-->
-    <!--app:tabBackground="@android:color/holo_orange_light"-->
-    <!--app:tabContentStart="25dp"-->
-    <!--app:tabMode="scrollable"/>-->
-
-    <!--<android.support.v4.view.PagerTabStrip-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="40dp"/>-->
-    <!--</android.support.v4.view.ViewPager>-->
-
     <Spinner
         android:id="@+id/period_spinner"
-        android:layout_width="80dp"
+        android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
-        android:background="@android:color/holo_red_dark"
+        android:background="@drawable/pierods_spinner_background"
+        android:spinnerMode="dropdown"
+        tools:listitem="@layout/item_periods"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 

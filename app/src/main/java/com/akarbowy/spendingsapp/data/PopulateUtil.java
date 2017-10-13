@@ -59,6 +59,8 @@ public class PopulateUtil {
 
     public static List<TransactionEntity> createListOfTransactions() {
         List<TransactionEntity> list = new ArrayList<>();
+        list.add(createTransaction("zakupy w pln, 2015", new Date(2015, 12, 3), 3, 1));
+        list.add(createTransaction("zakupy w pln, 2015", new Date(2015, 12, 3), 3, 1));
         list.add(createTransaction("zakupy w pln", new Date(2017, 12, 3), 3, 1));
         list.add(createTransaction("bilet w euro", new Date(2017, 12, 22),7, 2));
         list.add(createTransaction("ksiazka w pln", new Date(2017, 12, 12),6, 1));
@@ -67,6 +69,12 @@ public class PopulateUtil {
         list.add(createTransaction("drug2i w gbp", new Date(2017, 5, 1),4, 3));
         list.add(createTransaction("dxxrusgi w gbp", new Date(2017, 6, 25),3, 2));
         list.add(createTransaction("10 w gbp", new Date(2017, 10, 12),13, 3));
+        list.add(createTransaction("9 w eur", new Date(2017, 9, 12),13, 2));
+        list.add(createTransaction("9 w eur", new Date(2017, 9, 12),13, 2));
+        list.add(createTransaction("9 w eur", new Date(2017, 9, 12),13, 2));
+        list.add(createTransaction("9 w eur", new Date(2017, 9, 22),13, 2));
+        list.add(createTransaction("9 w eur", new Date(2017, 9, 22),13, 2));
+        list.add(createTransaction("9 w eur", new Date(2017, 9, 23),13, 2));
         list.add(createTransaction("10 w gbp", new Date(2017, 10, 12),13, 3));
         list.add(createTransaction("10 w eur", new Date(2017, 10, 12),13, 2));
         list.add(createTransaction("10 w eur", new Date(2017, 10, 12),13, 2));

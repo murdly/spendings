@@ -131,7 +131,7 @@ public class DbDaosTest {
 
         transactionDao.insert(list);
 
-        List<PeriodSpendings> allByCurrency = LiveDataTestUtil.getValue(transactionDao.allByCurrency(from, to));
+        List<PeriodSpendings> allByCurrency = LiveDataTestUtil.getValue(transactionDao.byCurrencyBetween(from, to));
 
         float totalSpendingsInCurrency = 0;
         for (PeriodSpendings spendings : allByCurrency) {

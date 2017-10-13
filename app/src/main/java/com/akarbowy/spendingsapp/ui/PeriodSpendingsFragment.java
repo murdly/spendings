@@ -53,7 +53,7 @@ public class PeriodSpendingsFragment extends Fragment {
         int pos = getArguments().getInt(ARG_OBJECT);
         vm.setPeriod(PeriodPagerAdapter.periods().get(pos));
 
-        vm.allByCurrency.observe(this, new Observer<List<PeriodSpendings>>() {
+        vm.periodicByCurrency.observe(this, new Observer<List<PeriodSpendings>>() {
             @Override public void onChanged(@Nullable List<PeriodSpendings> entities) {
                 adapter.setItems(entities);
 

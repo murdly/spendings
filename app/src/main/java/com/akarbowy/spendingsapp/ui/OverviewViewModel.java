@@ -18,28 +18,70 @@ import java.util.List;
 
 public class OverviewViewModel extends ViewModel {
     private final MutableLiveData<Period> period = new MutableLiveData<>();
-    public LiveData<List<PeriodSpendings>> allByCurrency;
+    public LiveData<List<PeriodSpendings>> periodicByCurrency;
 
     public LiveData<PagedList<TransactionEntity>> transactions;
 
     public OverviewViewModel(final AppDatabase appDatabase) {
         transactions = appDatabase.transactionDao().allByTitle()
                 .create(1, new PagedList.Config.Builder()
-                .setPrefetchDistance(5)
-                .setPageSize(10)
-                .setInitialLoadSizeHint(10)
-                .setEnablePlaceholders(true)
-                .build());
+                        .setPrefetchDistance(5)
+                        .setPageSize(10)
+                        .setInitialLoadSizeHint(8)
+                        .setEnablePlaceholders(true)
+                        .build());
 
-        allByCurrency = Transformations.switchMap(period, new Function<Period, LiveData<List<PeriodSpendings>>>() {
+        periodicByCurrency = Transformations.switchMap(period, new Function<Period, LiveData<List<PeriodSpendings>>>() {
             @Override public LiveData<List<PeriodSpendings>> apply(Period input) {
-                return appDatabase.transactionDao().allByCurrency(input.from, input.to);
+                if (input == null) {
+                    return appDatabase.transactionDao().byCurrency();
+                }
+
+                return appDatabase.transactionDao().byCurrencyBetween(input.from, input.to);
             }
         });
     }
 
     public void setPeriod(Period p) {
         this.period.setValue(p);
+    }
+
+    public static Periodd[] PERIODS = {
+            Periodd.THIS_MONTH,
+            Periodd.PREVIOUS_MONTH,
+            Periodd.ALL_TIME,
+            Periodd.CUSTOM
+    };
+
+    public void setPeriod(int periodPosition) {
+        Periodd p = PERIODS[periodPosition];
+        Period range = null;
+
+        if (p == Periodd.THIS_MONTH) {
+            range = new OverviewViewModel.Period(
+                    new Date(2017, 10, 1), new Date(2017, 10, 31));
+        } else if (p == Periodd.PREVIOUS_MONTH) {
+            range = new OverviewViewModel.Period(
+                    new Date(2017, 9, 1), new Date(2017, 9, 30));
+        } else if (p == Periodd.CUSTOM) {
+            range = new OverviewViewModel.Period(
+                    new Date(2016, 10, 1), new Date(2017, 9, 10));
+        }
+
+        this.period.setValue(range);
+    }
+
+    public enum Periodd {
+        THIS_MONTH("This month"),
+        PREVIOUS_MONTH("Previous month"),
+        ALL_TIME("All time"),
+        CUSTOM("Custom");
+
+        public final String title;
+
+        Periodd(String title) {
+            this.title = title;
+        }
     }
 
     public static class Period {

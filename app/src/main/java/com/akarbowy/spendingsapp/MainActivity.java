@@ -19,7 +19,6 @@ import com.akarbowy.spendingsapp.data.PopulateUtil;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import com.akarbowy.spendingsapp.ui.OverviewViewModel;
-import com.akarbowy.spendingsapp.ui.PeriodPagerAdapter;
 import com.akarbowy.spendingsapp.ui.PeriodSpendingsAdapter;
 import com.akarbowy.spendingsapp.ui.PeriodsAdapter;
 import com.akarbowy.spendingsapp.ui.RecentTransactionsAdapter;
@@ -34,8 +33,6 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
-    //    @BindView(R.id.pager) ViewPager pagerView;
-//    @BindView(R.id.tabs) TabLayout tabsView;
     @BindView(R.id.addNew) Button addNewView;
     @BindView(R.id.list) RecyclerView recentTransactionsList;
     @BindView(R.id.spendings_list) RecyclerView spendingsList;
@@ -52,31 +49,32 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         appDatabase = AppDatabase.getInstance(this);
 
-//        pagerView.setAdapter(new PeriodPagerAdapter(getSupportFragmentManager()));
-//        tabsView.setupWithViewPager(pagerView);
-
         final OverviewViewModel vm = ViewModelProviders.of(this,
                 new OverviewViewModel.OVMFactory(AppDatabase.getInstance(this)))
                 .get(OverviewViewModel.class);
 
+        periodsSpinner.setAdapter(new PeriodsAdapter(this, OverviewViewModel.PERIODS));
         periodsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 1) {
-                    vm.setPeriod(PeriodPagerAdapter.periods().get(4));
-                }
+                    vm.setPeriod(position);
             }
 
             @Override public void onNothingSelected(AdapterView<?> parent) {
-                vm.setPeriod(PeriodPagerAdapter.periods().get(2));
             }
         });
-        periodsSpinner.setAdapter(new PeriodsAdapter(this));
+
 
         spendingsAdapter = new PeriodSpendingsAdapter();
         LinearLayoutManager layout = new LinearLayoutManager(this);
         layout.setOrientation(LinearLayoutManager.HORIZONTAL);
         spendingsList.setLayoutManager(layout);
         spendingsList.setAdapter(spendingsAdapter);
+
+        vm.periodicByCurrency.observe(this, new Observer<List<PeriodSpendings>>() {
+            @Override public void onChanged(@Nullable List<PeriodSpendings> periodSpendings) {
+                spendingsAdapter.setItems(periodSpendings);
+            }
+        });
 
         final RecentTransactionsAdapter adapter = new RecentTransactionsAdapter();
         recentTransactionsList.setLayoutManager(new LinearLayoutManager(this));
@@ -91,11 +89,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        vm.allByCurrency.observe(this, new Observer<List<PeriodSpendings>>() {
-            @Override public void onChanged(@Nullable List<PeriodSpendings> periodSpendings) {
-                spendingsAdapter.setItems(periodSpendings);
-            }
-        });
     }
 
 
