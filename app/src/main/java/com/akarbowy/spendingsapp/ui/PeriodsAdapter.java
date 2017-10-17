@@ -17,7 +17,7 @@ public class PeriodsAdapter extends ArrayAdapter<OverviewViewModel.Periodd> {
     private OverviewViewModel.Periodd[] periodds;
 
     public PeriodsAdapter(@NonNull Context context, OverviewViewModel.Periodd[] periodds) {
-        super(context, R.layout.item_periods);
+        super(context, R.layout.home_spinner_view);
         this.periodds = periodds;
     }
 
@@ -25,7 +25,7 @@ public class PeriodsAdapter extends ArrayAdapter<OverviewViewModel.Periodd> {
         View view;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            view = inflater.inflate(R.layout.item_periods, parent, false);
+            view = inflater.inflate(R.layout.home_spinner_view, parent, false);
         } else {
             view = convertView;
         }
@@ -39,7 +39,7 @@ public class PeriodsAdapter extends ArrayAdapter<OverviewViewModel.Periodd> {
         View view;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            view = inflater.inflate(R.layout.item_periods_dropdawn, parent, false);
+            view = inflater.inflate(R.layout.home_spinner_dropdown, parent, false);
         } else {
             view = convertView;
         }

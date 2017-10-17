@@ -3,8 +3,10 @@ package com.akarbowy.spendingsapp;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,17 +17,15 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
-import com.akarbowy.spendingsapp.data.PopulateUtil;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import com.akarbowy.spendingsapp.ui.OverviewViewModel;
 import com.akarbowy.spendingsapp.ui.PeriodSpendingsAdapter;
 import com.akarbowy.spendingsapp.ui.PeriodsAdapter;
 import com.akarbowy.spendingsapp.ui.RecentTransactionsAdapter;
+import com.akarbowy.spendingsapp.ui.transaction.TransactionActivity;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppDatabase appDatabase;
     private PeriodSpendingsAdapter spendingsAdapter;
-
+    private OverviewViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +49,14 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         appDatabase = AppDatabase.getInstance(this);
 
-        final OverviewViewModel vm = ViewModelProviders.of(this,
+        vm = ViewModelProviders.of(this,
                 new OverviewViewModel.OVMFactory(AppDatabase.getInstance(this)))
                 .get(OverviewViewModel.class);
 
         periodsSpinner.setAdapter(new PeriodsAdapter(this, OverviewViewModel.PERIODS));
         periodsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    vm.setPeriod(position);
+                vm.setPeriod(position);
             }
 
             @Override public void onNothingSelected(AdapterView<?> parent) {
@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final RecentTransactionsAdapter adapter = new RecentTransactionsAdapter();
+        adapter.setOnItemClickListener(onTransactionItemClickListener);
         recentTransactionsList.setLayoutManager(new LinearLayoutManager(this));
         recentTransactionsList.setAdapter(adapter);
 
@@ -88,15 +89,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
 
+    private RecentTransactionsAdapter.OnItemClickListener onTransactionItemClickListener = new RecentTransactionsAdapter.OnItemClickListener() {
+        @Override public void onItemClick(final TransactionEntity item) {
+            showUpdateDialog(new OnTransactionActionListener() {
+                @Override public void onEdit() {
+                    startActivity(TransactionActivity.newEditIntent(MainActivity.this, item.id));
+                }
+
+                @Override public void onDelete() {
+                    vm.onDeleteRecentTransaction(item);
+                }
+            });
+        }
+    };
+
+    private void showUpdateDialog(final OnTransactionActionListener listener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Update transaction");
+        builder.setItems(new String[]{"Edit", "Delete"}, new DialogInterface.OnClickListener() {
+            @Override public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    listener.onEdit();
+                } else if (which == 1) {
+                    listener.onDelete();
+                }
+            }
+        });
+        builder.show();
     }
 
 
     @OnClick(R.id.addNew) public void add() {
-        TransactionEntity transactionEntity =
-                PopulateUtil.createTransaction(new Random().nextInt(20) + "title", new Date(2017, 10, 15), 1, 1);
+        startActivity(TransactionActivity.newAddIntent(this));
+    }
 
-        appDatabase.transactionDao().insertTransaction(transactionEntity);
+    public interface OnTransactionActionListener {
+        void onEdit();
+
+        void onDelete();
     }
 
 

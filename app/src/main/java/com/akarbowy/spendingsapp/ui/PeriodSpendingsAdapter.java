@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.akarbowy.spendingsapp.R;
@@ -33,7 +34,8 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
 
     @Override public void onBindViewHolder(ViewHolder holder, int position) {
         PeriodSpendings item = spendings.get(position);
-        holder.textView.setText(String.format("%s", item.total));
+        holder.valueView.setText(String.format("%s", item.total));
+        holder.changeValueView.setText("todo%");
     }
 
     @Override public int getItemCount() {
@@ -42,7 +44,9 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.spendings_value) TextView textView;
+        @BindView(R.id.spendings_card_value) TextView valueView;
+        @BindView(R.id.spendings_card_change_icon) ImageView changeIconView;
+        @BindView(R.id.spendings_card_change_value) TextView changeValueView;
 
         public ViewHolder(View itemView) {
             super(itemView);

@@ -17,17 +17,23 @@ import java.util.Date;
 import java.util.List;
 
 public class OverviewViewModel extends ViewModel {
+    public static Periodd[] PERIODS = {
+            Periodd.THIS_MONTH,
+            Periodd.PREVIOUS_MONTH,
+            Periodd.ALL_TIME,
+            Periodd.CUSTOM
+    };
     private final MutableLiveData<Period> period = new MutableLiveData<>();
+    private final AppDatabase appDatabase;
     public LiveData<List<PeriodSpendings>> periodicByCurrency;
-
     public LiveData<PagedList<TransactionEntity>> transactions;
 
     public OverviewViewModel(final AppDatabase appDatabase) {
-        transactions = appDatabase.transactionDao().allByTitle()
-                .create(1, new PagedList.Config.Builder()
-                        .setPrefetchDistance(5)
-                        .setPageSize(10)
-                        .setInitialLoadSizeHint(8)
+        this.appDatabase = appDatabase;
+        transactions = this.appDatabase.transactionDao().allByTitle()
+                .create(0, new PagedList.Config.Builder()
+                        .setPageSize(20)
+                        .setPrefetchDistance(20)
                         .setEnablePlaceholders(true)
                         .build());
 
@@ -41,17 +47,6 @@ public class OverviewViewModel extends ViewModel {
             }
         });
     }
-
-    public void setPeriod(Period p) {
-        this.period.setValue(p);
-    }
-
-    public static Periodd[] PERIODS = {
-            Periodd.THIS_MONTH,
-            Periodd.PREVIOUS_MONTH,
-            Periodd.ALL_TIME,
-            Periodd.CUSTOM
-    };
 
     public void setPeriod(int periodPosition) {
         Periodd p = PERIODS[periodPosition];
@@ -69,6 +64,11 @@ public class OverviewViewModel extends ViewModel {
         }
 
         this.period.setValue(range);
+    }
+
+    public void onDeleteRecentTransaction(TransactionEntity item) {
+        item.title = "DELETED";
+        appDatabase.transactionDao().updateTransaction(item);
     }
 
     public enum Periodd {

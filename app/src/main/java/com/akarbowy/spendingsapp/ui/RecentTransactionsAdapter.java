@@ -2,6 +2,7 @@ package com.akarbowy.spendingsapp.ui;
 
 
 import android.arch.paging.PagedListAdapter;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +34,7 @@ public class RecentTransactionsAdapter extends PagedListAdapter<TransactionEntit
                     return oldTransaction.equals(newTransaction);
                 }
             };
+    private OnItemClickListener onItemClickListener;
 
     public RecentTransactionsAdapter() {
         super(DIFF_CALLBACK);
@@ -47,9 +49,9 @@ public class RecentTransactionsAdapter extends PagedListAdapter<TransactionEntit
 
     @Override
     public void onBindViewHolder(TransactionViewHolder holder, int position) {
-        TransactionEntity transaction = getItem(position);
+        final TransactionEntity transaction = getItem(position);
         if (transaction != null) {
-            holder.bindTo(transaction);
+            holder.bindTo(transaction, onItemClickListener);
         } else {
             // Null defines a placeholder item - PagedListAdapter will automatically invalidate
             // this row when the actual object is loaded from the database
@@ -57,20 +59,46 @@ public class RecentTransactionsAdapter extends PagedListAdapter<TransactionEntit
         }
     }
 
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(TransactionEntity item);
+    }
+
     static class TransactionViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.transaction_recent_title) TextView titleView;
+        @BindView(R.id.itemTransactionName) TextView nameView;
+        @BindView(R.id.itemTransactionDate) TextView dateView;
+        @BindView(R.id.itemTransactionValue) TextView valueView;
+        View rootView;
 
         public TransactionViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            this.rootView = itemView;
         }
 
-        public void bindTo(TransactionEntity transaction) {
-            titleView.setText(transaction.toString());
+        public void bindTo(final TransactionEntity transaction, final OnItemClickListener onItemClickListener) {
+            nameView.setText(transaction.title);
+            nameView.setBackgroundColor(Color.TRANSPARENT);
+
+            dateView.setText("12 Aug");
+
+            valueView.setText("- " + transaction.value + " $");
+
+            rootView.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    onItemClickListener.onItemClick(transaction);
+                }
+            });
+
+
         }
 
         public void clear() {
+            nameView.setBackgroundColor(Color.GRAY);
         }
     }
 }
