@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
@@ -21,6 +22,7 @@ import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import com.akarbowy.spendingsapp.ui.OverviewViewModel;
 import com.akarbowy.spendingsapp.ui.PeriodSpendingsAdapter;
 import com.akarbowy.spendingsapp.ui.RecentTransactionsAdapter;
+import com.akarbowy.spendingsapp.ui.home.DatePickerFragment;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionActivity;
 
 import java.util.List;
@@ -31,8 +33,6 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.home_periods)
-    View periodsView;
     @BindView(R.id.home_add)
     Button addNewView;
     @BindView(R.id.list)
@@ -40,84 +40,18 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.spendings_list)
     RecyclerView spendingsList;
 
+    @BindView(R.id.period_title)
+    TextView periodTitleView;
+    @BindView(R.id.period_from)
+    TextView periodFromView;
+    @BindView(R.id.period_to)
+    TextView periodToView;
     @BindView(R.id.group)
     Group customPeriodGroup;
 
     private AppDatabase appDatabase;
     private PeriodSpendingsAdapter spendingsAdapter;
     private OverviewViewModel vm;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        appDatabase = AppDatabase.getInstance(this);
-
-        vm = ViewModelProviders.of(this,
-                new OverviewViewModel.OVMFactory(AppDatabase.getInstance(this)))
-                .get(OverviewViewModel.class);
-
-        vm.setPeriod(0);
-
-//        periodsSpinner.setAdapter(new PeriodsAdapter(this, OverviewViewModel.PERIODS));
-//        periodsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                vm.setPeriod(position);
-//            }
-//
-//            @Override public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
-
-
-        spendingsAdapter = new PeriodSpendingsAdapter();
-        LinearLayoutManager layout = new LinearLayoutManager(this);
-        layout.setOrientation(LinearLayoutManager.HORIZONTAL);
-        spendingsList.setLayoutManager(layout);
-        spendingsList.setAdapter(spendingsAdapter);
-
-        vm.periodicByCurrency.observe(this, new Observer<List<PeriodSpendings>>() {
-            @Override
-            public void onChanged(@Nullable List<PeriodSpendings> periodSpendings) {
-                spendingsAdapter.setItems(periodSpendings);
-            }
-        });
-
-        final RecentTransactionsAdapter adapter = new RecentTransactionsAdapter();
-        adapter.setOnItemClickListener(onTransactionItemClickListener);
-        recentTransactionsList.setLayoutManager(new LinearLayoutManager(this));
-        recentTransactionsList.setAdapter(adapter);
-
-
-        vm.transactions.observe(this, new Observer<PagedList<TransactionEntity>>() {
-            @Override
-            public void onChanged(@Nullable PagedList<TransactionEntity> items) {
-                adapter.setList(items);
-                Toast.makeText(MainActivity.this, "adding items: " + items.size(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-    }
-
-    @OnClick(R.id.home_periods)
-    public void onPeriodsClick() {
-        new AlertDialog.Builder(this)
-                .setTitle("Period")
-                .setItems(new String[]{"This month", "Previous month", "All time", "Custom"}, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which < 3) {
-                            vm.setPeriod(which);
-                        } else if (which == 3) {
-                            customPeriodGroup.setVisibility(View.VISIBLE);
-                        }
-                    }
-                })
-                .show();
-    }
-
     private RecentTransactionsAdapter.OnItemClickListener onTransactionItemClickListener = new RecentTransactionsAdapter.OnItemClickListener() {
         @Override
         public void onItemClick(final TransactionEntity item) {
@@ -134,6 +68,79 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        appDatabase = AppDatabase.getInstance(this);
+
+        vm = ViewModelProviders.of(this,
+                new OverviewViewModel.OVMFactory(AppDatabase.getInstance(this)))
+                .get(OverviewViewModel.class);
+
+        spendingsAdapter = new PeriodSpendingsAdapter();
+        LinearLayoutManager layout = new LinearLayoutManager(this);
+        layout.setOrientation(LinearLayoutManager.HORIZONTAL);
+        spendingsList.setLayoutManager(layout);
+        spendingsList.setAdapter(spendingsAdapter);
+
+        vm.periodicByCurrency.observe(this, new Observer<List<PeriodSpendings>>() {
+            @Override
+            public void onChanged(@Nullable List<PeriodSpendings> periodSpendings) {
+                periodTitleView.setText(vm.getSelectedPeriodTitle());
+                periodFromView.setText(vm.getPeriodFromTitle());
+                periodToView.setText(vm.getPeriodToTitle());
+                spendingsAdapter.setItems(periodSpendings);
+            }
+        });
+
+        final RecentTransactionsAdapter adapter = new RecentTransactionsAdapter();
+        adapter.setOnItemClickListener(onTransactionItemClickListener);
+        recentTransactionsList.setLayoutManager(new LinearLayoutManager(this));
+        recentTransactionsList.setAdapter(adapter);
+
+        vm.transactions.observe(this, new Observer<PagedList<TransactionEntity>>() {
+            @Override
+            public void onChanged(@Nullable PagedList<TransactionEntity> items) {
+                adapter.setList(items);
+                Toast.makeText(MainActivity.this, "adding items: " + items.size(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /*
+    If custom period chosen,
+    - make period boxes editable, with default values of current month, both from and to
+    - set these values on period title view.
+     */
+    @OnClick({R.id.period_title, R.id.period_icon})
+    public void onPeriodsClick() {
+        final String[] periodsTexts = {"This month", "Previous month", "All time", "Custom"};
+        new AlertDialog.Builder(this)
+                .setTitle("Period")
+                .setItems(periodsTexts, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        vm.setPeriod(which);
+                        if (which == 3) {
+                            customPeriodGroup.setVisibility(View.VISIBLE);
+                        }
+                    }
+                })
+                .show();
+    }
+
+    @OnClick(R.id.period_from)
+    public void onPeriodFromClick() {
+        new DatePickerFragment().show(getSupportFragmentManager(), "periodFrom");
+    }
+
+    @OnClick(R.id.period_to)
+    public void onPeriodToClick() {
+        new DatePickerFragment().show(getSupportFragmentManager(), "periodTo");
+    }
 
     private void showUpdateDialog(final OnTransactionActionListener listener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

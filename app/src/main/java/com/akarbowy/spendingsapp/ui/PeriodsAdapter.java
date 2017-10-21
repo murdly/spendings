@@ -12,13 +12,13 @@ import android.widget.TextView;
 
 import com.akarbowy.spendingsapp.R;
 
-public class PeriodsAdapter extends ArrayAdapter<OverviewViewModel.Periodd> {
+public class PeriodsAdapter extends ArrayAdapter<OverviewViewModel.PeriodType> {
 
-    private OverviewViewModel.Periodd[] periodds;
+    private OverviewViewModel.PeriodType[] periodTypes;
 
-    public PeriodsAdapter(@NonNull Context context, OverviewViewModel.Periodd[] periodds) {
+    public PeriodsAdapter(@NonNull Context context, OverviewViewModel.PeriodType[] periodTypes) {
         super(context, R.layout.home_spinner_view);
-        this.periodds = periodds;
+        this.periodTypes = periodTypes;
     }
 
     @NonNull @Override public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -30,8 +30,8 @@ public class PeriodsAdapter extends ArrayAdapter<OverviewViewModel.Periodd> {
             view = convertView;
         }
 
-        OverviewViewModel.Periodd periodd = getItem(position);
-        ((TextView) view.findViewById(R.id.period_item_title)).setText(periodd.title);
+        OverviewViewModel.PeriodType periodType = getItem(position);
+        ((TextView) view.findViewById(R.id.period_title)).setText(periodType.title);
         return view;
     }
 
@@ -44,17 +44,17 @@ public class PeriodsAdapter extends ArrayAdapter<OverviewViewModel.Periodd> {
             view = convertView;
         }
 
-        OverviewViewModel.Periodd periodd = getItem(position);
-        ((TextView) view.findViewById(R.id.period_item_title)).setText(periodd.title);
+        OverviewViewModel.PeriodType periodType = getItem(position);
+        ((TextView) view.findViewById(R.id.period_title)).setText(periodType.title);
         return view;
     }
 
     @Override public int getCount() {
-        return periodds.length;
+        return periodTypes.length;
     }
 
-    @Nullable @Override public OverviewViewModel.Periodd getItem(int position) {
-        return periodds[position];
+    @Nullable @Override public OverviewViewModel.PeriodType getItem(int position) {
+        return periodTypes[position];
     }
 
 }

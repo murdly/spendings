@@ -9,11 +9,14 @@
     <color name="colorSecondaryText">#757575</color>
     <color name="colorSeparatorDivider">#BDBDBD</color>
 
+    //common
+    <color name="white">#FFFFFF</color>
 
     //home view
     <color name="homeBackground">#FFFFFF</color>
 
     //transaction view
     <color name="transactionBackground">#FFFFFF</color>
+
 
 </resources>

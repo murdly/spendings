@@ -13,23 +13,31 @@ import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class OverviewViewModel extends ViewModel {
-    public static Periodd[] PERIODS = {
-            Periodd.THIS_MONTH,
-            Periodd.PREVIOUS_MONTH,
-            Periodd.ALL_TIME,
-            Periodd.CUSTOM
+    public static PeriodType[] PERIODS = {
+            PeriodType.THIS_MONTH,
+            PeriodType.PREVIOUS_MONTH,
+            PeriodType.ALL_TIME,
+            PeriodType.CUSTOM
     };
-    private final MutableLiveData<Period> period = new MutableLiveData<>();
+
     private final AppDatabase appDatabase;
+    private final MutableLiveData<Period> period = new MutableLiveData<>();
     public LiveData<List<PeriodSpendings>> periodicByCurrency;
     public LiveData<PagedList<TransactionEntity>> transactions;
+    private PeriodType periodType;
 
     public OverviewViewModel(final AppDatabase appDatabase) {
         this.appDatabase = appDatabase;
+
+        this.setPeriod(0);
+
         transactions = this.appDatabase.transactionDao().allByTitle()
                 .create(0, new PagedList.Config.Builder()
                         .setPageSize(20)
@@ -49,18 +57,24 @@ public class OverviewViewModel extends ViewModel {
     }
 
     public void setPeriod(int periodPosition) {
-        Periodd p = PERIODS[periodPosition];
+        periodType = PERIODS[periodPosition];
         Period range = null;
+        Calendar now = Calendar.getInstance(TimeZone.getDefault());
 
-        if (p == Periodd.THIS_MONTH) {
-            range = new OverviewViewModel.Period(
-                    new Date(2017, 10, 1), new Date(2017, 10, 31));
-        } else if (p == Periodd.PREVIOUS_MONTH) {
+        if (periodType == PeriodType.THIS_MONTH) {
+            Calendar fromThisMonth = Calendar.getInstance();
+            fromThisMonth.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.getActualMinimum(Calendar.DAY_OF_MONTH));
+            Calendar toThisMonth = Calendar.getInstance();
+            toThisMonth.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.getActualMaximum(Calendar.DAY_OF_MONTH));
+            range = new OverviewViewModel.Period(fromThisMonth.getTime(), toThisMonth.getTime());
+        } else if (periodType == PeriodType.PREVIOUS_MONTH) {
             range = new OverviewViewModel.Period(
                     new Date(2017, 9, 1), new Date(2017, 9, 30));
-        } else if (p == Periodd.CUSTOM) {
+        } else if (periodType == PeriodType.CUSTOM) {
             range = new OverviewViewModel.Period(
                     new Date(2016, 10, 1), new Date(2017, 9, 10));
+        } else {
+            // all time
         }
 
         this.period.setValue(range);
@@ -71,7 +85,33 @@ public class OverviewViewModel extends ViewModel {
         appDatabase.transactionDao().updateTransaction(item);
     }
 
-    public enum Periodd {
+    public String getSelectedPeriodTitle() {
+        if (periodType != PeriodType.CUSTOM) {
+            return periodType.title;
+        }
+
+        //title based on chosen period range. default: current month
+        return "May, 11 2016 - Oct, 21 2017";
+    }
+
+    //TODO null when ALL_TIME
+    public String getPeriodFromTitle() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        TimeZone tz = TimeZone.getDefault();
+        sdf.setTimeZone(tz);
+        String fromTitle = sdf.format(period.getValue().from);
+        return fromTitle;
+    }
+
+    public String getPeriodToTitle() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY");
+        TimeZone tz = TimeZone.getDefault();
+        sdf.setTimeZone(tz);
+        String toTitle = sdf.format(period.getValue().to);
+        return toTitle;
+    }
+
+    public enum PeriodType {
         THIS_MONTH("This month"),
         PREVIOUS_MONTH("Previous month"),
         ALL_TIME("All time"),
@@ -79,7 +119,7 @@ public class OverviewViewModel extends ViewModel {
 
         public final String title;
 
-        Periodd(String title) {
+        PeriodType(String title) {
             this.title = title;
         }
     }
