@@ -8,10 +8,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.akarbowy.spendingsapp.AmountFormatUtil;
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 import butterknife.BindView;
@@ -34,7 +37,8 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
 
     @Override public void onBindViewHolder(ViewHolder holder, int position) {
         PeriodSpendings item = spendings.get(position);
-        holder.valueView.setText(String.format("%s", item.total));
+        String total = AmountFormatUtil.format(item.total);
+        holder.valueView.setText(total);
         holder.changeValueView.setText("todo%");
     }
 
