@@ -7,6 +7,7 @@
     android:gravity="center"
     android:textColor="@color/colorPrimaryText"
     android:textSize="30sp"
-    tools:text="#">
+    android:background="?attr/selectableItemBackground"
+    tools:text="PLN">
 
 </TextView>

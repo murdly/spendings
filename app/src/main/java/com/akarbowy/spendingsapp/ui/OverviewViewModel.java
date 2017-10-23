@@ -29,8 +29,8 @@ public class OverviewViewModel extends ViewModel {
 
     private final AppDatabase appDatabase;
     private final MutableLiveData<Period> period = new MutableLiveData<>();
-    public LiveData<List<PeriodSpendings>> periodicByCurrency;
-    public LiveData<PagedList<TransactionEntity>> transactions;
+    public final LiveData<List<PeriodSpendings>> periodicByCurrency;
+    public final LiveData<PagedList<TransactionEntity>> transactions;
     private PeriodType periodType;
 
     public OverviewViewModel(final AppDatabase appDatabase) {
@@ -46,7 +46,8 @@ public class OverviewViewModel extends ViewModel {
                         .build());
 
         periodicByCurrency = Transformations.switchMap(period, new Function<Period, LiveData<List<PeriodSpendings>>>() {
-            @Override public LiveData<List<PeriodSpendings>> apply(Period input) {
+            @Override
+            public LiveData<List<PeriodSpendings>> apply(Period input) {
                 if (input == null) {
                     return appDatabase.transactionDao().byCurrency();
                 }
@@ -104,7 +105,7 @@ public class OverviewViewModel extends ViewModel {
     }
 
     public String getPeriodToTitle() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         TimeZone tz = TimeZone.getDefault();
         sdf.setTimeZone(tz);
         String toTitle = sdf.format(period.getValue().to);
@@ -134,15 +135,16 @@ public class OverviewViewModel extends ViewModel {
         }
     }
 
-    public static class OVMFactory implements ViewModelProvider.Factory {
+    public static class Factory implements ViewModelProvider.Factory {
 
         private final AppDatabase appDatabase;
 
-        public OVMFactory(AppDatabase appDatabase) {
+        public Factory(AppDatabase appDatabase) {
             this.appDatabase = appDatabase;
         }
 
-        @Override public <T extends ViewModel> T create(Class<T> modelClass) {
+        @Override
+        public <T extends ViewModel> T create(Class<T> modelClass) {
             if (modelClass.isAssignableFrom(OverviewViewModel.class)) {
                 return (T) new OverviewViewModel(appDatabase);
             }

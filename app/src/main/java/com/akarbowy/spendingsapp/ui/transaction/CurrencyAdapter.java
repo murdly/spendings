@@ -21,7 +21,12 @@ import butterknife.ButterKnife;
 
 public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.ViewHolder> {
 
+    public interface Callback {
+        void onCurrencyChosen(CurrencyDictionary chosen);
+    }
+
     private List<CurrencyDictionary> items = new ArrayList<>();
+    private Callback callback;
 
     public void setItems(List<CurrencyDictionary> items) {
         this.items.clear();
@@ -29,17 +34,30 @@ public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new CurrencyAdapter.ViewHolder(inflater.inflate(R.layout.item_transaction_currency, parent, false));
+        return new CurrencyAdapter.ViewHolder(inflater.inflate(R.layout.transaction_currency_item, parent, false));
 
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         CurrencyDictionary currency = items.get(position);
         holder.textView.setText(currency.name());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (callback != null) {
+                    CurrencyDictionary currency = items.get(holder.getLayoutPosition());
+                    callback.onCurrencyChosen(currency);
+                }
+            }
+        });
     }
 
     @Override

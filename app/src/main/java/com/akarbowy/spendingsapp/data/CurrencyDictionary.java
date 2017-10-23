@@ -10,15 +10,15 @@ public enum CurrencyDictionary {
     USD(4, "$", "USD", "American Dollars", R.drawable.ic_euro_symbol_black_24dp);
 
     int id;
-    String symbol;
-    String abr;
-    String name;
-    int iconResId;
+    public String symbol;
+    public String isoCode;
+    public String name;
+    public int iconResId;
 
-    CurrencyDictionary(int id, String symbol, String abr, String name, int iconResId) {
+    CurrencyDictionary(int id, String symbol, String isoCode, String name, int iconResId) {
         this.id = id;
         this.symbol = symbol;
-        this.abr = abr;
+        this.isoCode = isoCode;
         this.name = name;
         this.iconResId = iconResId;
     }

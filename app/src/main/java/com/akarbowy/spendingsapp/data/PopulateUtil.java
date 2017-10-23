@@ -30,6 +30,9 @@ public class PopulateUtil {
         list.add(createCategory(12, 10, "Restaurant"));
         list.add(createCategory(13, 10, "Other"));
 
+        list.add(createCategory(14, 0, "Other"));
+        list.add(createCategory(15, 14, "Other"));
+
         return list;
     }
 

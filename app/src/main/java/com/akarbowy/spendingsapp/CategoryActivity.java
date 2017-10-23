@@ -33,7 +33,7 @@ public class CategoryActivity extends AppCompatActivity {
         listView.setAdapter(arrayAdapter);
 
         OverviewViewModel vm = ViewModelProviders.of(this,
-                new OverviewViewModel.OVMFactory(AppDatabase.getInstance(this)))
+                new OverviewViewModel.Factory(AppDatabase.getInstance(this)))
                 .get(OverviewViewModel.class);
     }
 

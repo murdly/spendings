@@ -1,7 +1,6 @@
 package com.akarbowy.spendingsapp.ui.transaction;
 
 
-import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.CurrencyDictionary;
@@ -25,19 +25,13 @@ public class CurrencyBottomSheet extends BottomSheetDialogFragment {
     @BindView(R.id.list)
     RecyclerView listView;
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-
-        return dialog;
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.transaction_actions_currency, container);
+        View view = inflater.inflate(R.layout.transaction_currency_content, container);
         ButterKnife.bind(this, view);
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         return view;
     }
 
@@ -45,12 +39,18 @@ public class CurrencyBottomSheet extends BottomSheetDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TransactionViewModel viewModel = ViewModelProviders.of(this).get(TransactionViewModel.class);
+        final TransactionViewModel viewModel = ViewModelProviders.of(getActivity()).get(TransactionViewModel.class);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-        listView.setLayoutManager(layoutManager);
         CurrencyAdapter adapter = new CurrencyAdapter();
         adapter.setItems(Arrays.asList(viewModel.getAvailableCurrencies()));
+        adapter.setCallback(new CurrencyAdapter.Callback() {
+            @Override
+            public void onCurrencyChosen(CurrencyDictionary chosen) {
+                viewModel.setCurrency(chosen);
+                dismiss();
+            }
+        });
+        listView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         listView.setAdapter(adapter);
     }
 }

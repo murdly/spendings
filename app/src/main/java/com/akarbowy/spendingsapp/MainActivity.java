@@ -22,7 +22,7 @@ import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import com.akarbowy.spendingsapp.ui.OverviewViewModel;
 import com.akarbowy.spendingsapp.ui.PeriodSpendingsAdapter;
 import com.akarbowy.spendingsapp.ui.RecentTransactionsAdapter;
-import com.akarbowy.spendingsapp.ui.home.DatePickerFragment;
+import com.akarbowy.spendingsapp.ui.home.PeriodDatePicker;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionActivity;
 
 import java.util.List;
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         appDatabase = AppDatabase.getInstance(this);
 
         vm = ViewModelProviders.of(this,
-                new OverviewViewModel.OVMFactory(AppDatabase.getInstance(this)))
+                new OverviewViewModel.Factory(AppDatabase.getInstance(this)))
                 .get(OverviewViewModel.class);
 
         spendingsAdapter = new PeriodSpendingsAdapter();
@@ -134,12 +134,12 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.period_from)
     public void onPeriodFromClick() {
-        new DatePickerFragment().show(getSupportFragmentManager(), "periodFrom");
+        new PeriodDatePicker().show(getSupportFragmentManager(), "periodFrom");
     }
 
     @OnClick(R.id.period_to)
     public void onPeriodToClick() {
-        new DatePickerFragment().show(getSupportFragmentManager(), "periodTo");
+        new PeriodDatePicker().show(getSupportFragmentManager(), "periodTo");
     }
 
     private void showUpdateDialog(final OnTransactionActionListener listener) {

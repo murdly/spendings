@@ -12,7 +12,7 @@ import com.akarbowy.spendingsapp.ui.OverviewViewModel;
 
 import java.util.Calendar;
 
-public class DatePickerFragment extends DialogFragment
+public class PeriodDatePicker extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
 
     @Override
