@@ -6,17 +6,19 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.util.Log;
 
 import com.akarbowy.spendingsapp.App;
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.CurrencyDictionary;
 import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
-import com.akarbowy.spendingsapp.ui.OverviewViewModel;
+import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,29 +31,15 @@ import java.util.Map;
 public class TransactionViewModel extends ViewModel {
 
     public final LiveData<Map<CategoryEntity, List<CategoryEntity>>> categoriesWithSubs;
-
-    public final CurrencyDictionary[] getAvailableCurrencies() {
-        return new CurrencyDictionary[]{
-                CurrencyDictionary.GBP,
-                CurrencyDictionary.USD,
-                CurrencyDictionary.EUR,
-                CurrencyDictionary.PLN
-        };
-    }
-
-
     private AppDatabase appDatabase;
-
     private MutableLiveData<LocalDate> localDate = new MutableLiveData<>();
     private MutableLiveData<CurrencyDictionary> currency = new MutableLiveData<>();
-
-
+    private MutableLiveData<CategoryEntity> category = new MutableLiveData<>();
     public TransactionViewModel(AppDatabase appDatabase) {
         this.appDatabase = appDatabase;
 
         setLocalDate(LocalDate.now());
         setCurrency(App.DEFAULT_CURRENCY);
-
 
         categoriesWithSubs = Transformations.map(appDatabase.categoryDao().all()
                 , new Function<List<CategoryEntity>, Map<CategoryEntity, List<CategoryEntity>>>() {
@@ -59,7 +47,7 @@ public class TransactionViewModel extends ViewModel {
                     public Map<CategoryEntity, List<CategoryEntity>> apply(List<CategoryEntity> input) {
                         Map<Integer, CategoryEntity> categories = new HashMap<>();
                         for (CategoryEntity entity : input) {
-                            if(entity.parentId == 0){
+                            if (entity.parentId == 0) {
                                 categories.put(entity.id, entity);
                             }
                         }
@@ -80,7 +68,14 @@ public class TransactionViewModel extends ViewModel {
                 });
     }
 
-
+    public final CurrencyDictionary[] getAvailableCurrencies() {
+        return new CurrencyDictionary[]{
+                CurrencyDictionary.GBP,
+                CurrencyDictionary.USD,
+                CurrencyDictionary.EUR,
+                CurrencyDictionary.PLN
+        };
+    }
 
     public final LiveData<String> getFormattedDate() {
         return Transformations.map(localDate, new Function<LocalDate, String>() {
@@ -92,12 +87,12 @@ public class TransactionViewModel extends ViewModel {
         });
     }
 
-    public void setLocalDate(LocalDate localDate) {
-        this.localDate.setValue(localDate);
-    }
-
     public LocalDate getLocalDate() {
         return localDate.getValue();
+    }
+
+    public void setLocalDate(LocalDate localDate) {
+        this.localDate.setValue(localDate);
     }
 
     public MutableLiveData<CurrencyDictionary> getChosenCurrency() {
@@ -106,6 +101,25 @@ public class TransactionViewModel extends ViewModel {
 
     public void setCurrency(CurrencyDictionary currency) {
         this.currency.setValue(currency);
+    }
+
+    public MutableLiveData<CategoryEntity> getChosenCategory() {
+        return category;
+    }
+
+    public void setCategory(CategoryEntity category) {
+        this.category.setValue(category);
+    }
+
+    public void saveTransaction() {
+        TransactionEntity transaction = new TransactionEntity();
+        transaction.categoryId = category.getValue().id;
+        transaction.currencyId = currency.getValue().id;
+        transaction.title = "z vm";
+        transaction.value = 503;
+        transaction.date = new Date();//localDate.getValue();
+        Log.d("TransactionViewModel", transaction.toString());
+        appDatabase.transactionDao().insertTransaction(transaction);
     }
 
     public static class Factory implements ViewModelProvider.Factory {

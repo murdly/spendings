@@ -13,10 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.akarbowy.spendingsapp.R;
-import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
 
 import java.util.List;
@@ -34,6 +32,7 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
     RecyclerView categoriesListView;
 
     private SectionedRecyclerViewAdapter sectionAdapter;
+    private TransactionViewModel viewModel;
 
     @Nullable
     @Override
@@ -48,7 +47,7 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TransactionViewModel viewModel = ViewModelProviders.of(getActivity()).get(TransactionViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(TransactionViewModel.class);
 
         sectionAdapter = new SectionedRecyclerViewAdapter();
 
@@ -74,28 +73,60 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
                     CategorySection section = new CategorySection(category.getKey().name, category.getValue());
                     sectionAdapter.addSection(section);
                 }
+                sectionAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    private void onCategoryChosen(CategoryEntity chosen) {
+        viewModel.setCategory(chosen);
+        dismiss();
+    }
+
+    static class HeaderViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.header_title)
+        TextView title;
+        @BindView(R.id.header_arrow)
+        ImageView arrow;
+
+        HeaderViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    static class ItemViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.item_icon)
+        ImageView icon;
+        @BindView(R.id.item_title)
+        TextView title;
+
+        ItemViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
     }
 
     private class CategorySection extends StatelessSection {
 
         String title;
-        List<CategoryEntity> list;
+        List<CategoryEntity> items;
         boolean expanded = false;
 
-        CategorySection(String title, List<CategoryEntity> list) {
+        CategorySection(String title, List<CategoryEntity> items) {
             super(new SectionParameters.Builder(R.layout.transaction_category_item)
                     .headerResourceId(R.layout.transaction_category_header)
                     .build());
 
             this.title = title;
-            this.list = list;
+            this.items = items;
         }
 
         @Override
         public int getContentItemsTotal() {
-            return expanded ? list.size() : 0;
+            return expanded ? items.size() : 0;
         }
 
         @Override
@@ -107,14 +138,16 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
         public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
             final ItemViewHolder itemHolder = (ItemViewHolder) holder;
 
-            CategoryEntity item = list.get(position);
+            final CategoryEntity item = items.get(position);
 
             itemHolder.title.setText(item.name);
 
             itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(view.getContext(), "klik", Toast.LENGTH_SHORT).show();
+                    int itemPosition = sectionAdapter.getPositionInSection(itemHolder.getLayoutPosition());
+                    onCategoryChosen(items.get(itemPosition));
+
                 }
             });
         }
@@ -142,32 +175,6 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
                     sectionAdapter.notifyDataSetChanged();
                 }
             });
-        }
-    }
-
-    static class HeaderViewHolder extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.header_title)
-        TextView title;
-        @BindView(R.id.header_arrow)
-        ImageView arrow;
-
-        HeaderViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-        }
-    }
-
-    static class ItemViewHolder extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.item_icon)
-        ImageView icon;
-        @BindView(R.id.item_title)
-        TextView title;
-
-        ItemViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
         }
     }
 }

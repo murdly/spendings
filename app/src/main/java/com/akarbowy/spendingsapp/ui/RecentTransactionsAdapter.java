@@ -72,12 +72,10 @@ public class RecentTransactionsAdapter extends PagedListAdapter<TransactionEntit
         @BindView(R.id.itemTransactionName) TextView nameView;
         @BindView(R.id.itemTransactionDate) TextView dateView;
         @BindView(R.id.itemTransactionValue) TextView valueView;
-        View rootView;
 
         public TransactionViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            this.rootView = itemView;
         }
 
         public void bindTo(final TransactionEntity transaction, final OnItemClickListener onItemClickListener) {
@@ -88,11 +86,17 @@ public class RecentTransactionsAdapter extends PagedListAdapter<TransactionEntit
 
             valueView.setText("- " + transaction.value + " $");
 
-            rootView.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     onItemClickListener.onItemClick(transaction);
                 }
             });
+
+            if(transaction.deleted){
+                itemView.setBackgroundColor(Color.GRAY);
+            } else {
+                itemView.setBackgroundColor(0);
+            }
 
 
         }

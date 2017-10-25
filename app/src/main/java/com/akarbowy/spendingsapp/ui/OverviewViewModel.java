@@ -82,7 +82,7 @@ public class OverviewViewModel extends ViewModel {
     }
 
     public void onDeleteRecentTransaction(TransactionEntity item) {
-        item.title = "DELETED";
+        item.deleted = true;
         appDatabase.transactionDao().updateTransaction(item);
     }
 

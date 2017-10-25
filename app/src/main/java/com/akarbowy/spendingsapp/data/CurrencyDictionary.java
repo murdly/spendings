@@ -9,7 +9,7 @@ public enum CurrencyDictionary {
     EUR(3, "E", "EUR", "Euro", R.drawable.ic_euro_symbol_black_24dp),
     USD(4, "$", "USD", "American Dollars", R.drawable.ic_euro_symbol_black_24dp);
 
-    int id;
+    public int id;
     public String symbol;
     public String isoCode;
     public String name;

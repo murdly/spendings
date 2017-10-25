@@ -24,6 +24,7 @@ public class TransactionEntity {
     public String title;
     public Date date;
     public double value;
+    public boolean deleted;
 
     @ColumnInfo(name = "category_id")
     public int categoryId;
@@ -32,8 +33,8 @@ public class TransactionEntity {
 
     //TODO remove. for development.
     @Override public String toString() {
-        return String.format("%1$s-%2$s-%3$s-%4$s",
-                id, title, (int)value, date.getTime());
+        return String.format("%1$s-%2$s-%3$s-%4$s-%5$s",
+                id, title, (int)value, date.getTime(), deleted);
     }
 
     @Override public boolean equals(Object o) {

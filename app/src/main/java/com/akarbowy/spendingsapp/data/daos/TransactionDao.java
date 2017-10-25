@@ -23,13 +23,13 @@ public interface TransactionDao {
     @Update int updateTransaction(TransactionEntity transactionEntity);
 
     //@Delete
-    // I assume that deleted entries will be shown as disabled, so they should be updated instead
+    //Deleted entries will be shown as disabled, so they should be updated instead
 
     @Query("SELECT * FROM transactions ORDER BY date ASC") LiveData<List<TransactionEntity>> all();
 
     @Query("SELECT currencies.name, currencies.symbol, SUM (transactions.value) AS total FROM transactions " +
             "LEFT JOIN currencies ON transactions.currency_id = currencies.id " +
-            "WHERE transactions.date BETWEEN :from AND :to " +
+            "WHERE transactions.date between :from and :to AND transactions.deleted = 0 " +
             "GROUP BY transactions.currency_id ORDER BY total")
     LiveData<List<PeriodSpendings>> byCurrencyBetween(Date from, Date to);
 

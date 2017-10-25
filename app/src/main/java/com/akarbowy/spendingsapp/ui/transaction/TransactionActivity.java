@@ -8,18 +8,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.CurrencyDictionary;
-import com.akarbowy.spendingsapp.data.PopulateUtil;
-import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
-
-import java.util.Date;
-import java.util.Random;
+import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +27,8 @@ public class TransactionActivity extends AppCompatActivity {
     TextInputEditText dateValue;
     @BindView(R.id.transaction_fields_currency_value)
     TextInputEditText currencyValue;
+    @BindView(R.id.transaction_fields_category_value)
+    TextInputEditText categoryValue;
     @BindView(R.id.transaction_container)
     ViewGroup containerView;
 
@@ -71,11 +67,18 @@ public class TransactionActivity extends AppCompatActivity {
                 currencyValue.setText(currencyDictionary.isoCode);
             }
         });
+
+        viewModel.getChosenCategory().observe(this, new Observer<CategoryEntity>() {
+            @Override public void onChanged(@Nullable CategoryEntity categoryEntity) {
+                categoryValue.setText(categoryEntity.name);
+            }
+        });
     }
 
     @OnClick(R.id.transaction_save)
     public void onSaveClick() {
-        add();
+        viewModel.saveTransaction();
+        finish();
     }
 
     @OnClick(R.id.transaction_fields_category_value)
@@ -94,16 +97,5 @@ public class TransactionActivity extends AppCompatActivity {
     public void onDateValueClick() {
         TransactionDatePicker picker = new TransactionDatePicker();
         picker.show(getSupportFragmentManager(), "date");
-    }
-
-    public void add() {
-        TransactionEntity transactionEntity =
-                PopulateUtil.createTransaction(new Random().nextInt(20) + "title", new Date(2017, 10, 15), 1, 1);
-
-        AppDatabase.getInstance(this).transactionDao().insertTransaction(transactionEntity);
-
-        Toast.makeText(this, "inserted: " + transactionEntity.toString(), Toast.LENGTH_SHORT).show();
-
-        finish();
     }
 }
