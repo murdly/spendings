@@ -10,10 +10,11 @@ import com.akarbowy.spendingsapp.data.daos.CategoryDao;
 import com.akarbowy.spendingsapp.data.daos.CurrencyDao;
 import com.akarbowy.spendingsapp.data.daos.TransactionDao;
 import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
+import com.akarbowy.spendingsapp.data.entities.CategoryGroupEntity;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 
-@Database(version = 9, entities = {CategoryEntity.class, CurrencyEntity.class, TransactionEntity.class})
+@Database(version = 16, entities = {CategoryEntity.class, CategoryGroupEntity.class, CurrencyEntity.class, TransactionEntity.class})
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 

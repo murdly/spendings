@@ -73,7 +73,7 @@ public class DbDaosTest {
 
     @Test
     public void addSubCategory() {
-        int lastId = CATEGORIES.get(CATEGORIES.size() - 1).id;
+        int lastId = CATEGORIES.get(CATEGORIES.size() - 1).categoryEntityId;
         int categoryId = 1;
         CategoryEntity sub = PopulateUtil.createCategory(lastId + 1, categoryId, "sub");
         categoryDao.insert(sub);
@@ -82,7 +82,7 @@ public class DbDaosTest {
 
     @Test
     public void addCategory() {
-        int lastId = CATEGORIES.get(CATEGORIES.size() - 1).id;
+        int lastId = CATEGORIES.get(CATEGORIES.size() - 1).categoryEntityId;
         CategoryEntity sub = PopulateUtil.createCategory(lastId + 1, 0, "cat");
         categoryDao.insert(sub);
         assertEquals(4, categoryDao.getCategories().size());
@@ -90,7 +90,7 @@ public class DbDaosTest {
 
     @Test
     public void addTransaction() throws Exception {
-        int categoryId = CATEGORIES.get(0).id;
+        int categoryId = CATEGORIES.get(0).categoryEntityId;
         int currencyId = CURRENCIES.get(0).id;
         TransactionEntity t = DbTestUtil.createTransaction("drugi w gbp", new Date(2017, 1, 5), categoryId, currencyId);
         transactionDao.insertTransaction(t);

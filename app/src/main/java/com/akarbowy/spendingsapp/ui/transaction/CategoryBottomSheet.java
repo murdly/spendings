@@ -1,7 +1,6 @@
 package com.akarbowy.spendingsapp.ui.transaction;
 
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,9 +15,9 @@ import android.widget.TextView;
 
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
+import com.akarbowy.spendingsapp.data.entities.GroupedCategories;
 
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,13 +50,13 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
 
         sectionAdapter = new SectionedRecyclerViewAdapter();
 
-        GridLayoutManager glm = new GridLayoutManager(getContext(), 5);
+        GridLayoutManager glm = new GridLayoutManager(getContext(), 4);
         glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
                 switch (sectionAdapter.getSectionItemViewType(position)) {
                     case SectionedRecyclerViewAdapter.VIEW_TYPE_HEADER:
-                        return 5;
+                        return 4;
                     default:
                         return 1;
                 }
@@ -66,15 +65,12 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
         categoriesListView.setLayoutManager(glm);
         categoriesListView.setAdapter(sectionAdapter);
 
-        viewModel.categoriesWithSubs.observe(this, new Observer<Map<CategoryEntity, List<CategoryEntity>>>() {
-            @Override
-            public void onChanged(@Nullable Map<CategoryEntity, List<CategoryEntity>> categoriesWithSubs) {
-                for (Map.Entry<CategoryEntity, List<CategoryEntity>> category : categoriesWithSubs.entrySet()) {
-                    CategorySection section = new CategorySection(category.getKey().name, category.getValue());
-                    sectionAdapter.addSection(section);
-                }
-                sectionAdapter.notifyDataSetChanged();
+        viewModel.groupedCategories.observe(this, (groups) -> {
+            for (GroupedCategories g : groups) {
+                CategorySection section = new CategorySection(g.group.name, g.categories);
+                sectionAdapter.addSection(section);
             }
+            sectionAdapter.notifyDataSetChanged();
         });
     }
 
@@ -140,7 +136,7 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
 
             final CategoryEntity item = items.get(position);
 
-            itemHolder.title.setText(item.name);
+            itemHolder.title.setText(item.categoryName);
 
             itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

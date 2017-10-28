@@ -1,10 +1,8 @@
 package com.akarbowy.spendingsapp.ui;
 
 
-import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.paging.PagedList;
@@ -12,12 +10,12 @@ import android.arch.paging.PagedList;
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
+import com.akarbowy.spendingsapp.ui.transaction.TransactionRepository;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.DateTimeFormatter;
+
 import java.util.List;
-import java.util.TimeZone;
 
 public class OverviewViewModel extends ViewModel {
     public static PeriodType[] PERIODS = {
@@ -27,53 +25,38 @@ public class OverviewViewModel extends ViewModel {
             PeriodType.CUSTOM
     };
 
-    private final AppDatabase appDatabase;
+    private final TransactionRepository repository;
     private final MutableLiveData<Period> period = new MutableLiveData<>();
     public final LiveData<List<PeriodSpendings>> periodicByCurrency;
     public final LiveData<PagedList<TransactionEntity>> transactions;
     private PeriodType periodType;
 
-    public OverviewViewModel(final AppDatabase appDatabase) {
-        this.appDatabase = appDatabase;
+    public OverviewViewModel(TransactionRepository repository) {
+        this.repository = repository;
 
         this.setPeriod(0);
 
-        transactions = this.appDatabase.transactionDao().allByTitle()
-                .create(0, new PagedList.Config.Builder()
-                        .setPageSize(20)
-                        .setPrefetchDistance(20)
-                        .setEnablePlaceholders(true)
-                        .build());
+        transactions = repository.loadRecentTransactions();
 
-        periodicByCurrency = Transformations.switchMap(period, new Function<Period, LiveData<List<PeriodSpendings>>>() {
-            @Override
-            public LiveData<List<PeriodSpendings>> apply(Period input) {
-                if (input == null) {
-                    return appDatabase.transactionDao().byCurrency();
-                }
-
-                return appDatabase.transactionDao().byCurrencyBetween(input.from, input.to);
-            }
-        });
+        periodicByCurrency = repository.getExpensesInPeriod(period);
     }
 
     public void setPeriod(int periodPosition) {
         periodType = PERIODS[periodPosition];
         Period range = null;
-        Calendar now = Calendar.getInstance(TimeZone.getDefault());
+        LocalDate now = LocalDate.now();
 
         if (periodType == PeriodType.THIS_MONTH) {
-            Calendar fromThisMonth = Calendar.getInstance();
-            fromThisMonth.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.getActualMinimum(Calendar.DAY_OF_MONTH));
-            Calendar toThisMonth = Calendar.getInstance();
-            toThisMonth.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.getActualMaximum(Calendar.DAY_OF_MONTH));
-            range = new OverviewViewModel.Period(fromThisMonth.getTime(), toThisMonth.getTime());
+
+            LocalDate from = LocalDate.of(now.getYear(), now.getMonthValue(), 1);
+            LocalDate to = LocalDate.of(now.getYear(), now.getMonthValue(), 31);
+            range = new OverviewViewModel.Period(from, to);
         } else if (periodType == PeriodType.PREVIOUS_MONTH) {
             range = new OverviewViewModel.Period(
-                    new Date(2017, 9, 1), new Date(2017, 9, 30));
+                    LocalDate.of(2017, 9, 1), LocalDate.of(2017, 9, 30));
         } else if (periodType == PeriodType.CUSTOM) {
             range = new OverviewViewModel.Period(
-                    new Date(2016, 10, 1), new Date(2017, 9, 10));
+                    LocalDate.of(2016, 10, 1), LocalDate.of(2017, 9, 10));
         } else {
             // all time
         }
@@ -82,8 +65,14 @@ public class OverviewViewModel extends ViewModel {
     }
 
     public void onDeleteRecentTransaction(TransactionEntity item) {
-        item.deleted = true;
-        appDatabase.transactionDao().updateTransaction(item);
+        TransactionEntity copy = new TransactionEntity();
+        copy.transactionId = item.transactionId;
+        copy.deleted = true;
+        copy.title = item.title;
+        copy.date = item.date;
+        copy.categoryId = item.categoryId;
+        copy.currencyId = item.currencyId;
+        repository.deleteTransaction(copy);
     }
 
     public String getSelectedPeriodTitle() {
@@ -97,18 +86,14 @@ public class OverviewViewModel extends ViewModel {
 
     //TODO null when ALL_TIME
     public String getPeriodFromTitle() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-        TimeZone tz = TimeZone.getDefault();
-        sdf.setTimeZone(tz);
-        String fromTitle = sdf.format(period.getValue().from);
+        LocalDate from = period.getValue().from;
+        String fromTitle = from.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         return fromTitle;
     }
 
     public String getPeriodToTitle() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-        TimeZone tz = TimeZone.getDefault();
-        sdf.setTimeZone(tz);
-        String toTitle = sdf.format(period.getValue().to);
+        LocalDate to = period.getValue().to;
+        String toTitle = to.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         return toTitle;
     }
 
@@ -126,10 +111,10 @@ public class OverviewViewModel extends ViewModel {
     }
 
     public static class Period {
-        public Date from;
-        public Date to;
+        public LocalDate from;
+        public LocalDate to;
 
-        public Period(Date from, Date to) {
+        public Period(LocalDate from, LocalDate to) {
             this.from = from;
             this.to = to;
         }
@@ -137,16 +122,16 @@ public class OverviewViewModel extends ViewModel {
 
     public static class Factory implements ViewModelProvider.Factory {
 
-        private final AppDatabase appDatabase;
+        private final TransactionRepository repository;
 
-        public Factory(AppDatabase appDatabase) {
-            this.appDatabase = appDatabase;
+        public Factory(TransactionRepository repository) {
+            this.repository = repository;
         }
 
         @Override
         public <T extends ViewModel> T create(Class<T> modelClass) {
             if (modelClass.isAssignableFrom(OverviewViewModel.class)) {
-                return (T) new OverviewViewModel(appDatabase);
+                return (T) new OverviewViewModel(repository);
             }
             throw new IllegalArgumentException("Unknown ViewModel class");
         }

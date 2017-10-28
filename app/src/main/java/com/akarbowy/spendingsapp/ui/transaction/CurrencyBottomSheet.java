@@ -13,9 +13,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.akarbowy.spendingsapp.R;
-import com.akarbowy.spendingsapp.data.CurrencyDictionary;
-
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,15 +39,14 @@ public class CurrencyBottomSheet extends BottomSheetDialogFragment {
         final TransactionViewModel viewModel = ViewModelProviders.of(getActivity()).get(TransactionViewModel.class);
 
         CurrencyAdapter adapter = new CurrencyAdapter();
-        adapter.setItems(Arrays.asList(viewModel.getAvailableCurrencies()));
-        adapter.setCallback(new CurrencyAdapter.Callback() {
-            @Override
-            public void onCurrencyChosen(CurrencyDictionary chosen) {
-                viewModel.setCurrency(chosen);
-                dismiss();
-            }
-        });
         listView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         listView.setAdapter(adapter);
+
+        viewModel.currencies.observe(getActivity(), adapter::setItems);
+
+        adapter.setCallback(chosen -> {
+            viewModel.setCurrency(chosen);
+            dismiss();
+        });
     }
 }

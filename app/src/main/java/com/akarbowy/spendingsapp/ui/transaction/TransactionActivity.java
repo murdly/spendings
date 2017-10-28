@@ -1,19 +1,16 @@
 package com.akarbowy.spendingsapp.ui.transaction;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.AppDatabase;
-import com.akarbowy.spendingsapp.data.CurrencyDictionary;
-import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,28 +48,29 @@ public class TransactionActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         viewModel = ViewModelProviders.of(this,
-                new TransactionViewModel.Factory(AppDatabase.getInstance(this)))
+                new TransactionViewModel.Factory(new TransactionRepository(AppDatabase.getInstance(this))))
                 .get(TransactionViewModel.class);
 
-        viewModel.getFormattedDate().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                dateValue.setText(s);
+        int transactionId = getIntent().getIntExtra(EXTRA_TRANSACTION_ID, TransactionViewModel.UNDEFINED_TRANSACTION_ID);
+
+        viewModel.start(transactionId);
+
+        viewModel.transaction.observe(this, t -> {
+            if(t != null){
+                Log.d("xxTA2", t.transaction.toString() + "\n" +
+                        t.category.toString() + "\n" +
+                        t.currency.toString());
+                viewModel.setLocalDate(t.transaction.date);
+                viewModel.setCurrency(t.currency);
+                viewModel.setCategory(t.category);
             }
         });
 
-        viewModel.getChosenCurrency().observe(this, new Observer<CurrencyDictionary>() {
-            @Override
-            public void onChanged(@Nullable CurrencyDictionary currencyDictionary) {
-                currencyValue.setText(currencyDictionary.isoCode);
-            }
-        });
+        viewModel.getFormattedDate().observe(this, s -> dateValue.setText(s));
 
-        viewModel.getChosenCategory().observe(this, new Observer<CategoryEntity>() {
-            @Override public void onChanged(@Nullable CategoryEntity categoryEntity) {
-                categoryValue.setText(categoryEntity.name);
-            }
-        });
+        viewModel.getChosenCurrency().observe(this, currency -> currencyValue.setText(currency.isoCode));
+
+        viewModel.getChosenCategory().observe(this, categoryEntity -> categoryValue.setText(categoryEntity.categoryName));
     }
 
     @OnClick(R.id.transaction_save)

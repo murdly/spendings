@@ -7,7 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.akarbowy.spendingsapp.R;
-import com.akarbowy.spendingsapp.data.CurrencyDictionary;
+import com.akarbowy.spendingsapp.data.Dictionaries;
+import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +23,13 @@ import butterknife.ButterKnife;
 public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.ViewHolder> {
 
     public interface Callback {
-        void onCurrencyChosen(CurrencyDictionary chosen);
+        void onCurrencyChosen(CurrencyEntity chosen);
     }
 
-    private List<CurrencyDictionary> items = new ArrayList<>();
+    private List<CurrencyEntity> items = new ArrayList<>();
     private Callback callback;
 
-    public void setItems(List<CurrencyDictionary> items) {
+    public void setItems(List<CurrencyEntity> items) {
         this.items.clear();
         this.items.addAll(items);
         notifyDataSetChanged();
@@ -47,15 +48,12 @@ public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        CurrencyDictionary currency = items.get(position);
-        holder.textView.setText(currency.name());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (callback != null) {
-                    CurrencyDictionary currency = items.get(holder.getLayoutPosition());
-                    callback.onCurrencyChosen(currency);
-                }
+        CurrencyEntity currency = items.get(position);
+        holder.textView.setText(currency.isoCode);
+        holder.itemView.setOnClickListener(view -> {
+            if (callback != null) {
+                CurrencyEntity c = items.get(holder.getLayoutPosition());
+                callback.onCurrencyChosen(c);
             }
         });
     }

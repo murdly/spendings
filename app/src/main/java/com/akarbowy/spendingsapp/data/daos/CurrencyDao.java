@@ -1,5 +1,6 @@
 package com.akarbowy.spendingsapp.data.daos;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
@@ -15,5 +16,6 @@ public interface CurrencyDao {
 
     @Insert void insert(List<CurrencyEntity> currencies);
 
-    @Query("SELECT * FROM currencies") List<CurrencyEntity> all();
+    @Query("SELECT * FROM currencies")
+    LiveData<List<CurrencyEntity>> all();
 }

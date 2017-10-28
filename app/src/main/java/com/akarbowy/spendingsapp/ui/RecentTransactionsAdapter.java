@@ -14,6 +14,8 @@ import android.widget.TextView;
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 
+import org.threeten.bp.format.DateTimeFormatter;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -25,7 +27,7 @@ public class RecentTransactionsAdapter extends PagedListAdapter<TransactionEntit
                 @Override
                 public boolean areItemsTheSame(@NonNull TransactionEntity oldTransaction,
                                                @NonNull TransactionEntity newTransaction) {
-                    return oldTransaction.id == newTransaction.id;
+                    return oldTransaction.transactionId == newTransaction.transactionId;
                 }
 
                 @Override
@@ -40,7 +42,8 @@ public class RecentTransactionsAdapter extends PagedListAdapter<TransactionEntit
         super(DIFF_CALLBACK);
     }
 
-    @Override public TransactionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @Override
+    public TransactionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.item_home_transaction_recent, parent, false);
 
@@ -69,9 +72,12 @@ public class RecentTransactionsAdapter extends PagedListAdapter<TransactionEntit
 
     static class TransactionViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.itemTransactionName) TextView nameView;
-        @BindView(R.id.itemTransactionDate) TextView dateView;
-        @BindView(R.id.itemTransactionValue) TextView valueView;
+        @BindView(R.id.itemTransactionName)
+        TextView nameView;
+        @BindView(R.id.itemTransactionDate)
+        TextView dateView;
+        @BindView(R.id.itemTransactionValue)
+        TextView valueView;
 
         public TransactionViewHolder(View itemView) {
             super(itemView);
@@ -82,20 +88,18 @@ public class RecentTransactionsAdapter extends PagedListAdapter<TransactionEntit
             nameView.setText(transaction.title);
             nameView.setBackgroundColor(Color.TRANSPARENT);
 
-            dateView.setText("12 Aug");
+            String formatted = transaction.date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+
+            dateView.setText(formatted);
 
             valueView.setText("- " + transaction.value + " $");
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    onItemClickListener.onItemClick(transaction);
-                }
-            });
-
-            if(transaction.deleted){
+            if (transaction.deleted) {
                 itemView.setBackgroundColor(Color.GRAY);
+                itemView.setOnClickListener(null);
             } else {
                 itemView.setBackgroundColor(0);
+                itemView.setOnClickListener(v -> onItemClickListener.onItemClick(transaction));
             }
 
 

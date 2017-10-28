@@ -24,6 +24,7 @@ import com.akarbowy.spendingsapp.ui.PeriodSpendingsAdapter;
 import com.akarbowy.spendingsapp.ui.RecentTransactionsAdapter;
 import com.akarbowy.spendingsapp.ui.home.PeriodDatePicker;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionActivity;
+import com.akarbowy.spendingsapp.ui.transaction.TransactionRepository;
 
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             showUpdateDialog(new OnTransactionActionListener() {
                 @Override
                 public void onEdit() {
-                    startActivity(TransactionActivity.newEditIntent(MainActivity.this, item.id));
+                    startActivity(TransactionActivity.newEditIntent(MainActivity.this, item.transactionId));
                 }
 
                 @Override
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         appDatabase = AppDatabase.getInstance(this);
 
         vm = ViewModelProviders.of(this,
-                new OverviewViewModel.Factory(AppDatabase.getInstance(this)))
+                new OverviewViewModel.Factory(new TransactionRepository(appDatabase)))
                 .get(OverviewViewModel.class);
 
         spendingsAdapter = new PeriodSpendingsAdapter();
@@ -86,14 +87,11 @@ public class MainActivity extends AppCompatActivity {
         spendingsList.setLayoutManager(layout);
         spendingsList.setAdapter(spendingsAdapter);
 
-        vm.periodicByCurrency.observe(this, new Observer<List<PeriodSpendings>>() {
-            @Override
-            public void onChanged(@Nullable List<PeriodSpendings> periodSpendings) {
-                periodTitleView.setText(vm.getSelectedPeriodTitle());
-                periodFromView.setText(vm.getPeriodFromTitle());
-                periodToView.setText(vm.getPeriodToTitle());
-                spendingsAdapter.setItems(periodSpendings);
-            }
+        vm.periodicByCurrency.observe(this, periodSpendings -> {
+            periodTitleView.setText(vm.getSelectedPeriodTitle());
+            periodFromView.setText(vm.getPeriodFromTitle());
+            periodToView.setText(vm.getPeriodToTitle());
+            spendingsAdapter.setItems(periodSpendings);
         });
 
         final RecentTransactionsAdapter adapter = new RecentTransactionsAdapter();
@@ -101,12 +99,9 @@ public class MainActivity extends AppCompatActivity {
         recentTransactionsList.setLayoutManager(new LinearLayoutManager(this));
         recentTransactionsList.setAdapter(adapter);
 
-        vm.transactions.observe(this, new Observer<PagedList<TransactionEntity>>() {
-            @Override
-            public void onChanged(@Nullable PagedList<TransactionEntity> items) {
-                adapter.setList(items);
-                Toast.makeText(MainActivity.this, "adding items: " + items.size(), Toast.LENGTH_SHORT).show();
-            }
+        vm.transactions.observe(this, items -> {
+            adapter.setList(items);
+            Toast.makeText(MainActivity.this, "adding items: " + items.size(), Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -120,13 +115,10 @@ public class MainActivity extends AppCompatActivity {
         final String[] periodsTexts = {"This month", "Previous month", "All time", "Custom"};
         new AlertDialog.Builder(this)
                 .setTitle("Period")
-                .setItems(periodsTexts, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        vm.setPeriod(which);
-                        if (which == 3) {
-                            customPeriodGroup.setVisibility(View.VISIBLE);
-                        }
+                .setItems(periodsTexts, (dialog, which) -> {
+                    vm.setPeriod(which);
+                    if (which == 3) {
+                        customPeriodGroup.setVisibility(View.VISIBLE);
                     }
                 })
                 .show();
@@ -145,14 +137,11 @@ public class MainActivity extends AppCompatActivity {
     private void showUpdateDialog(final OnTransactionActionListener listener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Update transaction");
-        builder.setItems(new String[]{"Edit", "Delete"}, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {
-                    listener.onEdit();
-                } else if (which == 1) {
-                    listener.onDelete();
-                }
+        builder.setItems(new String[]{"Edit", "Delete"}, (dialog, which) -> {
+            if (which == 0) {
+                listener.onEdit();
+            } else if (which == 1) {
+                listener.onDelete();
             }
         });
         builder.show();

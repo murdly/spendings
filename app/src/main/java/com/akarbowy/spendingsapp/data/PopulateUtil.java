@@ -37,10 +37,10 @@ public class PopulateUtil {
     }
 
     public static CategoryEntity createCategory(int id, int parentId, String name) {
-        CategoryEntity entity = new CategoryEntity();
-        entity.id = id;
-        entity.parentId = parentId;
-        entity.name = name;
+        CategoryEntity entity = new CategoryEntity("");
+        entity.categoryEntityId = id;
+        entity.groupId = parentId;
+        entity.categoryName = name;
         return entity;
     }
 
@@ -53,8 +53,7 @@ public class PopulateUtil {
     }
 
     public static CurrencyEntity createCurrency(int id, String name, String symbol) {
-        CurrencyEntity entity = new CurrencyEntity();
-        entity.id = id;
+        CurrencyEntity entity = new CurrencyEntity("","","");
         entity.name = name;
         entity.symbol = symbol;
         return entity;
@@ -88,10 +87,10 @@ public class PopulateUtil {
     public static TransactionEntity createTransaction(String title, Date date, int categoryId, int currencyId) {
         TransactionEntity transactionEntity = new TransactionEntity();
         transactionEntity.title = title;
-        transactionEntity.date = date;
+//        transactionEntity.date = date;
         transactionEntity.value = new Random().nextInt(300);
         transactionEntity.categoryId = categoryId;
-        transactionEntity.currencyId = currencyId;
+        transactionEntity.currencyId = "";
         return transactionEntity;
     }
 }
