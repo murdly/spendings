@@ -12,9 +12,7 @@ import com.akarbowy.spendingsapp.AmountFormatUtil;
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 import butterknife.BindView;
@@ -24,33 +22,38 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
 
     private List<PeriodSpendings> spendings = new ArrayList<>();
 
-    public void setItems(List<PeriodSpendings> items){
+    public void setItems(List<PeriodSpendings> items) {
         spendings.clear();
         spendings.addAll(items);
         notifyDataSetChanged();
     }
 
-    @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         return new ViewHolder(inflater.inflate(R.layout.item_home_spendings, parent, false));
     }
 
-    @Override public void onBindViewHolder(ViewHolder holder, int position) {
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
         PeriodSpendings item = spendings.get(position);
-        String total = AmountFormatUtil.format(item.total);
-        holder.valueView.setText(total);
+        holder.valueView.setText(String.format("%1$s %2$s", AmountFormatUtil.format(item.total), item.symbol));
         holder.changeValueView.setText("todo%");
     }
 
-    @Override public int getItemCount() {
+    @Override
+    public int getItemCount() {
         return spendings.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.spendings_card_value) TextView valueView;
-        @BindView(R.id.spendings_card_change_icon) ImageView changeIconView;
-        @BindView(R.id.spendings_card_change_value) TextView changeValueView;
+        @BindView(R.id.spendings_card_value)
+        TextView valueView;
+        @BindView(R.id.spendings_card_change_icon)
+        ImageView changeIconView;
+        @BindView(R.id.spendings_card_change_value)
+        TextView changeValueView;
 
         public ViewHolder(View itemView) {
             super(itemView);

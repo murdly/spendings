@@ -7,6 +7,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
 
 
 @Entity(tableName = "transactions",
@@ -23,7 +24,7 @@ public class TransactionEntity {
     public int transactionId;
 
     public String title;
-    public LocalDate date;
+    public LocalDateTime date;
     public double value;
     public boolean deleted;
 
@@ -35,7 +36,7 @@ public class TransactionEntity {
     //TODO remove. for development.
     @Override public String toString() {
         return String.format("%1$s-%2$s-%3$s-%4$s-%5$s",
-                transactionId, title, (int)value, date.toEpochDay(), deleted);
+                transactionId, title, (int)value, date, deleted);
     }
 
 
@@ -47,7 +48,10 @@ public class TransactionEntity {
         TransactionEntity entity = (TransactionEntity) o;
 
         if (transactionId != entity.transactionId) return false;
-        return deleted == entity.deleted;
+        return deleted == entity.deleted &&
+                title.equals(entity.title) &&
+                value == entity.value &&
+                date.equals(entity.date);
     }
 
     @Override

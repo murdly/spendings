@@ -4,6 +4,7 @@
     //Home screen
     <string name="home_label_recent">Recent</string>
     <string name="home_label_add">Add</string>
+    <string name="home_period_arrow">&#x25BC;</string>
 
 
     //Transaction screen

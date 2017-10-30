@@ -36,15 +36,6 @@ public abstract class CategoryDao {
     @Insert
     public abstract void insert(CategoryEntity category);
 
-//    @Insert
-//    public abstract  void insert(List<CategoryEntity> categories);
-
     @Query("SELECT * FROM categories")
     public abstract LiveData<List<CategoryEntity>> all();
-
-//    @Query("SELECT * FROM categories WHERE parent_id LIKE :categoryId")
-//    List<CategoryEntity> getSubCategories(int categoryId);
-//
-//    @Query("SELECT * FROM categories WHERE parent_id LIKE 0")
-//    List<CategoryEntity>  getCategories();
 }

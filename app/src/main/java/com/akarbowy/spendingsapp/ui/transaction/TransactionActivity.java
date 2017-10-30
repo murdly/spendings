@@ -6,8 +6,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.AppDatabase;
@@ -20,16 +24,23 @@ public class TransactionActivity extends AppCompatActivity {
 
     private static final String EXTRA_TRANSACTION_ID = "extra_transaction_id";
 
+    @BindView(R.id.transaction_fields_value_value)
+    TextInputEditText valueValueInput;
     @BindView(R.id.transaction_fields_date_value)
-    TextInputEditText dateValue;
+    TextInputEditText dateValueInput;
     @BindView(R.id.transaction_fields_currency_value)
-    TextInputEditText currencyValue;
+    TextInputEditText currencyValueInput;
     @BindView(R.id.transaction_fields_category_value)
-    TextInputEditText categoryValue;
+    TextInputEditText categoryValueInput;
+    @BindView(R.id.transaction_fields_name_value)
+    TextInputEditText nameValueInput;
+    @BindView(R.id.transaction_delete)
+    Button deleteButton;
     @BindView(R.id.transaction_container)
     ViewGroup containerView;
 
     TransactionViewModel viewModel;
+    TransactionDataValidator validator;
 
     public static Intent newAddIntent(Context context) {
         return new Intent(context, TransactionActivity.class);
@@ -53,30 +64,85 @@ public class TransactionActivity extends AppCompatActivity {
 
         int transactionId = getIntent().getIntExtra(EXTRA_TRANSACTION_ID, TransactionViewModel.UNDEFINED_TRANSACTION_ID);
 
+        deleteButton.setVisibility(transactionId == TransactionViewModel.UNDEFINED_TRANSACTION_ID ? View.GONE : View.VISIBLE);
+
         viewModel.start(transactionId);
 
         viewModel.transaction.observe(this, t -> {
-            if(t != null){
-                Log.d("xxTA2", t.transaction.toString() + "\n" +
-                        t.category.toString() + "\n" +
-                        t.currency.toString());
-                viewModel.setLocalDate(t.transaction.date);
+            if (t != null) {
+                Log.d("xxTA2", t.toString());
+
+                viewModel.setLocalDateTime(t.transaction.date);
                 viewModel.setCurrency(t.currency);
                 viewModel.setCategory(t.category);
+                viewModel.setValue(t.transaction.value);
+                viewModel.setName(t.transaction.title);
+
+                valueValueInput.setText(String.valueOf(t.transaction.value));
+                nameValueInput.setText(t.transaction.title);
             }
         });
 
-        viewModel.getFormattedDate().observe(this, s -> dateValue.setText(s));
+        viewModel.getFormattedDate().observe(this, s -> dateValueInput.setText(s));
 
-        viewModel.getChosenCurrency().observe(this, currency -> currencyValue.setText(currency.isoCode));
+        viewModel.getChosenCurrency().observe(this, currency -> currencyValueInput.setText(currency.isoCode));
 
-        viewModel.getChosenCategory().observe(this, categoryEntity -> categoryValue.setText(categoryEntity.categoryName));
+        viewModel.getChosenCategory().observe(this, categoryEntity -> categoryValueInput.setText(categoryEntity.categoryName));
+
+
+        validator = new TransactionDataValidator(new TextInputEditText[]{
+                valueValueInput, categoryValueInput, nameValueInput}, "Must be set");
+
+        valueValueInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String text = s.toString();
+                Double value = !text.isEmpty() ? Double.valueOf(text) : null;
+                viewModel.setValue(value);
+            }
+        });
+
+        nameValueInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                viewModel.setName(s.toString());
+            }
+        });
+
+    }
+
+    @OnClick(R.id.transaction_delete)
+    public void onDeleteClick() {
+        viewModel.onDeleteTransaction();
+        finish();
     }
 
     @OnClick(R.id.transaction_save)
     public void onSaveClick() {
-        viewModel.saveTransaction();
-        finish();
+        if (validator.validate()) {
+            viewModel.onSaveTransaction();
+            finish();
+        }
     }
 
     @OnClick(R.id.transaction_fields_category_value)

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
 import com.akarbowy.spendingsapp.data.entities.GroupedCategories;
+import com.akarbowy.spendingsapp.ui.ResourceUtil;
 
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
 
         viewModel.groupedCategories.observe(this, (groups) -> {
             for (GroupedCategories g : groups) {
-                CategorySection section = new CategorySection(g.group.name, g.categories);
+                CategorySection section = new CategorySection(g.group.groupName, g.categories);
                 sectionAdapter.addSection(section);
             }
             sectionAdapter.notifyDataSetChanged();
@@ -136,15 +137,13 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
 
             final CategoryEntity item = items.get(position);
 
+            itemHolder.icon.setImageResource(ResourceUtil.getCategoryIconId(getContext(), title, item.categoryName));
             itemHolder.title.setText(item.categoryName);
 
-            itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int itemPosition = sectionAdapter.getPositionInSection(itemHolder.getLayoutPosition());
-                    onCategoryChosen(items.get(itemPosition));
+            itemHolder.itemView.setOnClickListener(view -> {
+                int itemPosition = sectionAdapter.getPositionInSection(itemHolder.getLayoutPosition());
+                onCategoryChosen(items.get(itemPosition));
 
-                }
             });
         }
 
@@ -159,17 +158,14 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
 
             headerHolder.title.setText(title);
 
-            headerHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    expanded = !expanded;
-                    headerHolder.arrow.setImageResource(
-                            expanded ?
-                                    R.drawable.ic_arrow_drop_up_black_24dp
-                                    : R.drawable.ic_arrow_drop_down_black_24dp
-                    );
-                    sectionAdapter.notifyDataSetChanged();
-                }
+            headerHolder.itemView.setOnClickListener(v -> {
+                expanded = !expanded;
+                headerHolder.arrow.setImageResource(
+                        expanded ?
+                                R.drawable.ic_arrow_drop_up_black_24dp
+                                : R.drawable.ic_arrow_drop_down_black_24dp
+                );
+                sectionAdapter.notifyDataSetChanged();
             });
         }
     }

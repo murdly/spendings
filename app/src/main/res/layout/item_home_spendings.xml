@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/spendings_value"
-    android:layout_width="120dp"
+    android:layout_width="135dp"
     android:layout_height="100dp"
     android:gravity="center"
     app:cardBackgroundColor="@color/colorPrimary"
@@ -17,9 +17,10 @@
         android:id="@+id/spendings_card_value"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:textSize="45sp"
+        android:textSize="35sp"
+        android:maxLines="1"
         android:textColor="@color/colorText"
-        tools:text="101$"/>
+        tools:text="101k $"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,7 +33,7 @@
             android:id="@+id/spendings_card_change_icon"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/ic_trending_up_black_18dp"/>
+            app:srcCompat="@drawable/ic_trending_up_black_18dp"/>
 
         <TextView
             android:id="@+id/spendings_card_change_value"

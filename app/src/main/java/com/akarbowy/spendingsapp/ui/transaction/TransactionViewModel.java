@@ -13,6 +13,8 @@ import com.akarbowy.spendingsapp.data.entities.GroupedCategories;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.List;
@@ -32,7 +34,9 @@ public class TransactionViewModel extends ViewModel {
 
     private MutableLiveData<Integer> transactionId = new MutableLiveData<>();
 
-    private MutableLiveData<LocalDate> localDate = new MutableLiveData<>();
+    private Double value = null;
+    private String name = null;
+    private MutableLiveData<LocalDateTime> localDateTime = new MutableLiveData<>();
     private MutableLiveData<CurrencyEntity> currency = new MutableLiveData<>();
     private MutableLiveData<CategoryEntity> category = new MutableLiveData<>();
 
@@ -43,8 +47,9 @@ public class TransactionViewModel extends ViewModel {
         currencies = repository.getCurrencies();
         transaction = Transformations.switchMap(transactionId, id -> {
             if (id == UNDEFINED_TRANSACTION_ID) {
-                setLocalDate(LocalDate.now());
+                setLocalDateTime(LocalDateTime.now(ZoneOffset.UTC));
                 setCurrency(App.DEFAULT_CURRENCY);
+                setName("Transaction");
                 return null;
             }
 
@@ -52,16 +57,32 @@ public class TransactionViewModel extends ViewModel {
         });
     }
 
+    public Double getValue() {
+        return value;
+    }
+
+    public void setValue(Double value) {
+        this.value = value;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public final LiveData<String> getFormattedDate() {
-        return Transformations.map(localDate, input -> input.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+        return Transformations.map(localDateTime, input -> input.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
     }
 
-    public LocalDate getLocalDate() {
-        return localDate.getValue();
+    public LocalDateTime getLocalDateTime() {
+        return localDateTime.getValue();
     }
 
-    public void setLocalDate(LocalDate localDate) {
-        this.localDate.setValue(localDate);
+    public void setLocalDateTime(LocalDateTime localDateTime) {
+        this.localDateTime.setValue(localDateTime);
     }
 
     public MutableLiveData<CurrencyEntity> getChosenCurrency() {
@@ -80,18 +101,23 @@ public class TransactionViewModel extends ViewModel {
         this.category.setValue(category);
     }
 
-    public void saveTransaction() {
+    public void start(int transactionId) {
+        this.transactionId.setValue(transactionId);
+    }
+
+    public void onSaveTransaction() {
         TransactionEntity transaction = new TransactionEntity();
+        transaction.transactionId = transactionId.getValue();
         transaction.categoryId = category.getValue().categoryEntityId;
         transaction.currencyId = currency.getValue().isoCode;
-        transaction.title = "z vm";
-        transaction.value = 503;
-        transaction.date = localDate.getValue(); //TODO zones
+        transaction.title = name;
+        transaction.value = value;
+        transaction.date = localDateTime.getValue(); //TODO zones
         repository.saveTransaction(transaction);
     }
 
-    public void start(int transactionId) {
-        this.transactionId.setValue(transactionId);
+    public void onDeleteTransaction() {
+        repository.updateTransaction(transaction.getValue().transaction);
     }
 
     public static class Factory implements ViewModelProvider.Factory {

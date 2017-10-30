@@ -13,6 +13,6 @@ public class GroupedCategories {
     @Embedded
     public CategoryGroupEntity group;
 
-    @Relation(parentColumn = "id", entityColumn = "group_id")
+    @Relation(parentColumn = "categoryGroupEntityId", entityColumn = "group_id")
     public List<CategoryEntity> categories;
 }

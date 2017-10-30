@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    >
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="50dp"
+                                             android:layout_marginBottom="4dp"
+                                             android:layout_marginEnd="8dp"
+                                             android:layout_marginStart="8dp"
+                                             android:layout_marginTop="4dp">
 
     <ImageView
         android:id="@+id/itemTransactionIcon"
@@ -22,21 +21,24 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:color/darker_gray" />
+        tools:src="@drawable/ic_category_transportation_railway"/>
 
     <TextView
-        android:id="@+id/itemTransactionName"
+        android:id="@+id/itemTransactionTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLength="20"
+        android:maxLines="1"
         android:textColor="@color/colorPrimaryText"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/itemTransactionIcon"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Transaction" />
+        tools:text="TransactioTransaction Transactiddddddonn"/>
 
     <TextView
         android:id="@+id/itemTransactionValue"
@@ -51,19 +53,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="- 207.83 $" />
+        tools:text="- 207.83 $"/>
 
     <TextView
-        android:id="@+id/itemTransactionDate"
+        android:id="@+id/itemTransactionSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:textColor="@color/colorSecondaryText"
         android:textSize="12sp"
+        android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/itemTransactionIcon"
-        app:layout_constraintTop_toBottomOf="@+id/itemTransactionName"
-        tools:text="12 października" />
+        app:layout_constraintTop_toBottomOf="@+id/itemTransactionTitle"
+        tools:text="12 października, deleted"/>
 </android.support.constraint.ConstraintLayout>

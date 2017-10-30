@@ -1,11 +1,7 @@
 package com.akarbowy.spendingsapp;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.arch.paging.PagedList;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.constraint.Group;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,16 +13,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
-import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
-import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import com.akarbowy.spendingsapp.ui.OverviewViewModel;
 import com.akarbowy.spendingsapp.ui.PeriodSpendingsAdapter;
 import com.akarbowy.spendingsapp.ui.RecentTransactionsAdapter;
 import com.akarbowy.spendingsapp.ui.home.PeriodDatePicker;
+import com.akarbowy.spendingsapp.ui.transaction.Transaction;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionActivity;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionRepository;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,16 +48,17 @@ public class MainActivity extends AppCompatActivity {
     private OverviewViewModel vm;
     private RecentTransactionsAdapter.OnItemClickListener onTransactionItemClickListener = new RecentTransactionsAdapter.OnItemClickListener() {
         @Override
-        public void onItemClick(final TransactionEntity item) {
+        public void onItemClick(final Transaction item) {
             showUpdateDialog(new OnTransactionActionListener() {
                 @Override
                 public void onEdit() {
-                    startActivity(TransactionActivity.newEditIntent(MainActivity.this, item.transactionId));
+                    startActivity(TransactionActivity.newEditIntent(MainActivity.this,
+                            item.transaction.transactionId));
                 }
 
                 @Override
                 public void onDelete() {
-                    vm.onDeleteRecentTransaction(item);
+                    vm.onDeleteTransaction(item.transaction);
                 }
             });
         }
@@ -88,13 +82,13 @@ public class MainActivity extends AppCompatActivity {
         spendingsList.setAdapter(spendingsAdapter);
 
         vm.periodicByCurrency.observe(this, periodSpendings -> {
-            periodTitleView.setText(vm.getSelectedPeriodTitle());
+            periodTitleView.setText(String.format("%s %s", vm.getSelectedPeriodTitle(), getString(R.string.home_period_arrow)));
             periodFromView.setText(vm.getPeriodFromTitle());
             periodToView.setText(vm.getPeriodToTitle());
             spendingsAdapter.setItems(periodSpendings);
         });
 
-        final RecentTransactionsAdapter adapter = new RecentTransactionsAdapter();
+        final RecentTransactionsAdapter adapter = new RecentTransactionsAdapter(this);
         adapter.setOnItemClickListener(onTransactionItemClickListener);
         recentTransactionsList.setLayoutManager(new LinearLayoutManager(this));
         recentTransactionsList.setAdapter(adapter);
@@ -110,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
     - make period boxes editable, with default values of current month, both from and to
     - set these values on period title view.
      */
-    @OnClick({R.id.period_title, R.id.period_icon})
+    @OnClick(R.id.period_title)
     public void onPeriodsClick() {
         final String[] periodsTexts = {"This month", "Previous month", "All time", "Custom"};
         new AlertDialog.Builder(this)

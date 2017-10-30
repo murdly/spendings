@@ -7,16 +7,16 @@ import android.arch.persistence.room.PrimaryKey;
 public class CategoryGroupEntity {
 
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    public int categoryGroupEntityId;
 
-    public String name;
+    public String groupName;
 
-    public CategoryGroupEntity(String name) {
-        this.name = name;
+    public CategoryGroupEntity(String groupName) {
+        this.groupName = groupName;
     }
 
     //TODO remove. for development.
     @Override public String toString() {
-        return String.format("%1$s-%2$s", id, name);
+        return String.format("%1$s-%2$s", categoryGroupEntityId, groupName);
     }
 }

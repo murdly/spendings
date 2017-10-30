@@ -10,9 +10,14 @@ import android.arch.paging.PagedList;
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
+import com.akarbowy.spendingsapp.ui.transaction.Transaction;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionRepository;
 
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.LocalTime;
+import org.threeten.bp.ZoneOffset;
+import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.List;
@@ -28,7 +33,7 @@ public class OverviewViewModel extends ViewModel {
     private final TransactionRepository repository;
     private final MutableLiveData<Period> period = new MutableLiveData<>();
     public final LiveData<List<PeriodSpendings>> periodicByCurrency;
-    public final LiveData<PagedList<TransactionEntity>> transactions;
+    public final LiveData<PagedList<Transaction>> transactions;
     private PeriodType periodType;
 
     public OverviewViewModel(TransactionRepository repository) {
@@ -44,35 +49,31 @@ public class OverviewViewModel extends ViewModel {
     public void setPeriod(int periodPosition) {
         periodType = PERIODS[periodPosition];
         Period range = null;
-        LocalDate now = LocalDate.now();
-
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        LocalTime localTime = ZonedDateTime.now(ZoneOffset.UTC).with(LocalTime.MIDNIGHT).toLocalTime();
+        LocalDate from = LocalDate.of(now.getYear(), now.getMonthValue(), 1);
+        LocalDate to = LocalDate.of(now.getYear(), now.getMonthValue(), 31);
         if (periodType == PeriodType.THIS_MONTH) {
 
-            LocalDate from = LocalDate.of(now.getYear(), now.getMonthValue(), 1);
-            LocalDate to = LocalDate.of(now.getYear(), now.getMonthValue(), 31);
-            range = new OverviewViewModel.Period(from, to);
+            from = LocalDate.of(now.getYear(), now.getMonthValue(), 1);
+            to = LocalDate.of(now.getYear(), now.getMonthValue(), 31);
         } else if (periodType == PeriodType.PREVIOUS_MONTH) {
-            range = new OverviewViewModel.Period(
-                    LocalDate.of(2017, 9, 1), LocalDate.of(2017, 9, 30));
+//            range = new OverviewViewModel.Period(
+//                    LocalDate.of(2017, 9, 1), LocalDate.of(2017, 9, 30));
         } else if (periodType == PeriodType.CUSTOM) {
-            range = new OverviewViewModel.Period(
-                    LocalDate.of(2016, 10, 1), LocalDate.of(2017, 9, 10));
+//            range = new OverviewViewModel.Period(
+//                    LocalDate.of(2016, 10, 1), LocalDate.of(2017, 9, 10));
         } else {
             // all time
         }
 
+        range = new OverviewViewModel.Period(LocalDateTime.of(from, localTime), LocalDateTime.of(to, localTime));
+
         this.period.setValue(range);
     }
 
-    public void onDeleteRecentTransaction(TransactionEntity item) {
-        TransactionEntity copy = new TransactionEntity();
-        copy.transactionId = item.transactionId;
-        copy.deleted = true;
-        copy.title = item.title;
-        copy.date = item.date;
-        copy.categoryId = item.categoryId;
-        copy.currencyId = item.currencyId;
-        repository.deleteTransaction(copy);
+    public void onDeleteTransaction(TransactionEntity item) {
+        repository.updateTransaction(item);
     }
 
     public String getSelectedPeriodTitle() {
@@ -86,13 +87,13 @@ public class OverviewViewModel extends ViewModel {
 
     //TODO null when ALL_TIME
     public String getPeriodFromTitle() {
-        LocalDate from = period.getValue().from;
+        LocalDate from = period.getValue().from.toLocalDate();
         String fromTitle = from.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         return fromTitle;
     }
 
     public String getPeriodToTitle() {
-        LocalDate to = period.getValue().to;
+        LocalDate to = period.getValue().to.toLocalDate();
         String toTitle = to.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         return toTitle;
     }
@@ -111,10 +112,10 @@ public class OverviewViewModel extends ViewModel {
     }
 
     public static class Period {
-        public LocalDate from;
-        public LocalDate to;
+        public LocalDateTime from;
+        public LocalDateTime to;
 
-        public Period(LocalDate from, LocalDate to) {
+        public Period(LocalDateTime from, LocalDateTime to) {
             this.from = from;
             this.to = to;
         }

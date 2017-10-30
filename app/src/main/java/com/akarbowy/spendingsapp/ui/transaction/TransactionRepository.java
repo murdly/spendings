@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.paging.PagedList;
+import android.util.Log;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
@@ -43,8 +44,8 @@ public class TransactionRepository {
         return database.transactionDao().getById(id);
     }
 
-    public LiveData<PagedList<TransactionEntity>> loadRecentTransactions() {
-        return database.transactionDao().allByTitle()
+    public LiveData<PagedList<Transaction>> loadRecentTransactions() {
+        return database.transactionDao().allByNewestFirst()
                 .create(0, new PagedList.Config.Builder()
                         .setPageSize(20)
                         .setPrefetchDistance(20)
@@ -63,12 +64,22 @@ public class TransactionRepository {
     }
 
     public void saveTransaction(TransactionEntity transaction) {
+        Log.d("REPO", "saveTransaction| " + transaction.toString());
         database.transactionDao().insertTransaction(transaction);
     }
 
-    public void deleteTransaction(TransactionEntity transaction) {
+    public void updateTransaction(TransactionEntity transaction) {
         //Deleted entries will be shown as disabled, so they should be updated instead
-        database.transactionDao().insertTransaction(transaction);
+        TransactionEntity copy = new TransactionEntity();
+        copy.transactionId = transaction.transactionId;
+        copy.deleted = true;
+        copy.title = transaction.title;
+        copy.date = transaction.date;
+        copy.value = transaction.value;
+        copy.categoryId = transaction.categoryId;
+        copy.currencyId = transaction.currencyId;
+
+        saveTransaction(copy);
     }
 
 }

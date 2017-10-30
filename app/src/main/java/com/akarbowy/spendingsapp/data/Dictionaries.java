@@ -1,23 +1,26 @@
 package com.akarbowy.spendingsapp.data;
 
-import com.akarbowy.spendingsapp.R;
-
 import java.util.EnumSet;
 
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Accessories;
+import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Air;
+import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Bike;
+import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Boat;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Books;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Bus;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Charity;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Clothing;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.CoffeeShop;
-import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Detergens;
+import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Detergents;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Doctors;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Family;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Friends;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Furniture;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Grocery;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Hotel;
+import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Railway;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.SportingGoods;
+import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Tram;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Transport;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.PersonalCareGoods;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Pharmacy;
@@ -38,8 +41,8 @@ public interface Dictionaries {
 
     enum Currency {
         PLN("zł", "PLN", "Polish Złoty"),
-        GBP("Ł", "GBP", "British Pound"),
-        EUR("E", "EUR", "Euro"),
+        GBP("£", "GBP", "British Pound"),
+        EUR("€", "EUR", "Euro"),
         USD("$", "USD", "American Dollars");
 
         public final String symbol;
@@ -55,15 +58,15 @@ public interface Dictionaries {
     }
 
     enum CategoryGroup {
-        Transportation("Transportation", EnumSet.of(Tube, Bus, Taxi)),
+        Transportation("Transportation", EnumSet.of(Tube, Bus, Taxi, Air, Railway, Tram, Bike, Boat)),
         FoodAndDining("Food & Dining", EnumSet.of(Grocery, CoffeeShop, Restaurant)),
         Bills("Bills", EnumSet.of(Phone, Utilities, Tickets)),
         Travel("Travel", EnumSet.of(Transport, Hotel, Souvenirs)),
         Health("Health", EnumSet.of(Pharmacy, Doctors, PersonalCareGoods)),
-        House("House", EnumSet.of(Detergens, Furniture)),
+        House("House", EnumSet.of(Detergents, Furniture)),
         Shopping("Shopping", EnumSet.of(Clothing, Books, Accessories, SportingGoods)),
         GiftsAndCharity("Gifts & Charity", EnumSet.of(Family, Friends, Charity)),
-        Other("Other", EnumSet.of(Undefined));
+        Other("Undefined", EnumSet.of(Undefined));
 
         final String title;
         final EnumSet<Category> categories;
@@ -78,6 +81,11 @@ public interface Dictionaries {
             Tube("Tube"),
             Bus("Bus"),
             Taxi("Taxi"),
+            Air("Air"),
+            Railway("Railway"),
+            Tram("Tram"),
+            Bike("Bike"),
+            Boat("Boat"),
 
             //Food & Dining
             Grocery("Grocery"),
@@ -100,7 +108,7 @@ public interface Dictionaries {
             PersonalCareGoods("Goods"),
 
             //House
-            Detergens("Detergens"),
+            Detergents("Detergents"),
             Furniture("Furniture"),
 
             //Shopping
