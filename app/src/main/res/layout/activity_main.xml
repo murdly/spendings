@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/homeBackground"
-              android:orientation="vertical"
-              tools:context="com.akarbowy.spendingsapp.MainActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/homeBackground"
+    android:orientation="vertical"
+    tools:context="com.akarbowy.spendingsapp.MainActivity">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
         android:layout_marginTop="16dp">
 
         <TextView
@@ -21,51 +20,50 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:ellipsize="middle"
+            android:gravity="center_horizontal"
             android:singleLine="true"
             android:textColor="@color/colorPrimaryText"
-            android:textSize="25sp"
+            android:textSize="26sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="This month  &#x25BC;"/>
+            tools:text="This month  &#x25BE;" />
 
         <android.support.constraint.Group
             android:id="@+id/group"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:visibility="visible"
-            app:constraint_referenced_ids="period_from,gap,period_to"/>
+            app:constraint_referenced_ids="period_from,gap,period_to" />
 
         <TextView
             android:id="@+id/period_from"
             android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginEnd="4dp"
             android:background="@drawable/home_period_box"
             android:enabled="false"
             android:gravity="center"
-            android:text="20.12.2017"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/home_period_box"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/period_title"/>
+            app:layout_constraintRight_toLeftOf="@id/gap"
+            app:layout_constraintTop_toBottomOf="@id/period_title"
+            tools:text="20.12.2017" />
 
         <TextView
             android:id="@+id/gap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginStart="4dp"
             android:gravity="center"
             android:text="-"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/home_period_box"
             app:layout_constraintBottom_toBottomOf="@id/period_from"
-            app:layout_constraintStart_toEndOf="@id/period_from"
-            app:layout_constraintTop_toTopOf="@id/period_from"/>
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/period_from" />
 
         <TextView
             android:id="@+id/period_to"
@@ -78,12 +76,11 @@
             android:background="@drawable/home_period_box"
             android:enabled="true"
             android:gravity="center"
-            android:text="10.11.2017"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/home_period_box"
             app:layout_constraintBottom_toBottomOf="@id/gap"
             app:layout_constraintLeft_toRightOf="@id/gap"
             app:layout_constraintTop_toTopOf="@id/gap"
-            />
+            tools:text="10.11.2017" />
     </android.support.constraint.ConstraintLayout>
 
     <android.support.v7.widget.RecyclerView
@@ -92,12 +89,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorSeparatorDivider"/>
+        android:background="@color/colorSeparatorDivider" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -115,7 +112,7 @@
             android:text="@string/home_label_recent"
             android:textColor="@color/colorPrimaryText"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/home_add"
@@ -126,17 +123,17 @@
             android:text="@string/home_label_add"
             android:textColor="@color/colorText"
             android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
     </FrameLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorSeparatorDivider"/>
+        android:background="@color/colorSeparatorDivider" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent" />
 
 </LinearLayout>

@@ -19,6 +19,7 @@
         android:layout_height="60dp"
         android:textSize="35sp"
         android:maxLines="1"
+        android:gravity="center"
         android:textColor="@color/colorText"
         tools:text="101k $"/>
 

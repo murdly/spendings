@@ -7,7 +7,6 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.paging.PagedList;
 
-import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import com.akarbowy.spendingsapp.ui.transaction.Transaction;
@@ -15,26 +14,26 @@ import com.akarbowy.spendingsapp.ui.transaction.TransactionRepository;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.LocalTime;
-import org.threeten.bp.ZoneOffset;
-import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class OverviewViewModel extends ViewModel {
-    public static PeriodType[] PERIODS = {
-            PeriodType.THIS_MONTH,
-            PeriodType.PREVIOUS_MONTH,
-            PeriodType.ALL_TIME,
-            PeriodType.CUSTOM
-    };
+
+    private static final SpendingsPeriod.Type[] PERIODS = SpendingsPeriod.Type.values();
+
 
     private final TransactionRepository repository;
-    private final MutableLiveData<Period> period = new MutableLiveData<>();
+
+    private SpendingsPeriod.Type type;
+    private final MutableLiveData<SpendingsPeriod> period = new MutableLiveData<>();
     public final LiveData<List<PeriodSpendings>> periodicByCurrency;
+
     public final LiveData<PagedList<Transaction>> transactions;
-    private PeriodType periodType;
+
 
     public OverviewViewModel(TransactionRepository repository) {
         this.repository = repository;
@@ -42,83 +41,57 @@ public class OverviewViewModel extends ViewModel {
         this.setPeriod(0);
 
         transactions = repository.loadRecentTransactions();
-
         periodicByCurrency = repository.getExpensesInPeriod(period);
     }
 
-    public void setPeriod(int periodPosition) {
-        periodType = PERIODS[periodPosition];
-        Period range = null;
-        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-        LocalTime localTime = ZonedDateTime.now(ZoneOffset.UTC).with(LocalTime.MIDNIGHT).toLocalTime();
-        LocalDate from = LocalDate.of(now.getYear(), now.getMonthValue(), 1);
-        LocalDate to = LocalDate.of(now.getYear(), now.getMonthValue(), 31);
-        if (periodType == PeriodType.THIS_MONTH) {
+    public SpendingsPeriod getPeriod() {
+        return period.getValue();
+    }
 
-            from = LocalDate.of(now.getYear(), now.getMonthValue(), 1);
-            to = LocalDate.of(now.getYear(), now.getMonthValue(), 31);
-        } else if (periodType == PeriodType.PREVIOUS_MONTH) {
-//            range = new OverviewViewModel.Period(
-//                    LocalDate.of(2017, 9, 1), LocalDate.of(2017, 9, 30));
-        } else if (periodType == PeriodType.CUSTOM) {
-//            range = new OverviewViewModel.Period(
-//                    LocalDate.of(2016, 10, 1), LocalDate.of(2017, 9, 10));
+    public void setPeriod(int periodPosition) {
+        this.type = PERIODS[periodPosition];
+
+        SpendingsPeriod newPeriod;
+
+        if (!isCustomPeriodSet()) {
+            newPeriod = SpendingsPeriod.of(type);
         } else {
-            // all time
+            SpendingsPeriod current = getPeriod();
+            newPeriod = SpendingsPeriod.custom(current.from(), current.to());
+        }
+        
+        this.period.setValue(newPeriod);
+    }
+
+    public void setCustomPeriod(LocalDateTime from, LocalDateTime to) {
+        this.type = SpendingsPeriod.Type.CUSTOM;
+        this.period.setValue(SpendingsPeriod.custom(from, to));
+    }
+
+    public boolean isCustomPeriodSet() {
+        return type == SpendingsPeriod.Type.CUSTOM;
+    }
+
+    public String getSelectedPeriodTitle() {
+        if (type != SpendingsPeriod.Type.CUSTOM) {
+            return type.title;
         }
 
-        range = new OverviewViewModel.Period(LocalDateTime.of(from, localTime), LocalDateTime.of(to, localTime));
+        return String.format("%s - %s", getPeriodFromTitle(), getPeriodToTitle());
+    }
 
-        this.period.setValue(range);
+    public String getPeriodFromTitle() {
+        LocalDate from = period.getValue().from().toLocalDate();
+        return from.format(DateTimeFormatter.ofPattern("d MMM uuuu"));
+    }
+
+    public String getPeriodToTitle() {
+        LocalDate to = period.getValue().to().toLocalDate();
+        return to.format(DateTimeFormatter.ofPattern("d MMM uuuu"));
     }
 
     public void onDeleteTransaction(TransactionEntity item) {
         repository.updateTransaction(item);
-    }
-
-    public String getSelectedPeriodTitle() {
-        if (periodType != PeriodType.CUSTOM) {
-            return periodType.title;
-        }
-
-        //title based on chosen period range. default: current month
-        return "May, 11 2016 - Oct, 21 2017";
-    }
-
-    //TODO null when ALL_TIME
-    public String getPeriodFromTitle() {
-        LocalDate from = period.getValue().from.toLocalDate();
-        String fromTitle = from.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        return fromTitle;
-    }
-
-    public String getPeriodToTitle() {
-        LocalDate to = period.getValue().to.toLocalDate();
-        String toTitle = to.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        return toTitle;
-    }
-
-    public enum PeriodType {
-        THIS_MONTH("This month"),
-        PREVIOUS_MONTH("Previous month"),
-        ALL_TIME("All time"),
-        CUSTOM("Custom");
-
-        public final String title;
-
-        PeriodType(String title) {
-            this.title = title;
-        }
-    }
-
-    public static class Period {
-        public LocalDateTime from;
-        public LocalDateTime to;
-
-        public Period(LocalDateTime from, LocalDateTime to) {
-            this.from = from;
-            this.to = to;
-        }
     }
 
     public static class Factory implements ViewModelProvider.Factory {

@@ -11,7 +11,7 @@ import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 import com.akarbowy.spendingsapp.data.entities.GroupedCategories;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
-import com.akarbowy.spendingsapp.ui.OverviewViewModel;
+import com.akarbowy.spendingsapp.ui.SpendingsPeriod;
 
 import java.util.List;
 
@@ -53,13 +53,13 @@ public class TransactionRepository {
                         .build());
     }
 
-    public LiveData<List<PeriodSpendings>> getExpensesInPeriod(MutableLiveData<OverviewViewModel.Period> period){
+    public LiveData<List<PeriodSpendings>> getExpensesInPeriod(MutableLiveData<SpendingsPeriod> period){
         return Transformations.switchMap(period, input -> {
             if (input == null) {
                 return database.transactionDao().byCurrency();
             }
 
-            return database.transactionDao().byCurrencyBetween(input.from, input.to);
+            return database.transactionDao().byCurrencyBetween(input.from(), input.to());
         });
     }
 

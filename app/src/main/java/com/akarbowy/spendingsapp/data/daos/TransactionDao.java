@@ -6,13 +6,11 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Update;
 
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import com.akarbowy.spendingsapp.ui.transaction.Transaction;
 
-import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 
 import java.util.List;
@@ -32,12 +30,12 @@ public interface TransactionDao {
     @Query("SELECT currencies.name, currencies.symbol, SUM (transactions.value) AS total FROM transactions " +
             "LEFT JOIN currencies ON transactions.currency_id = currencies.isoCode " +
             "WHERE transactions.date between :from and :to AND transactions.deleted = 0 " +
-            "GROUP BY transactions.currency_id ORDER BY total")
+            "GROUP BY transactions.currency_id ORDER BY total DESC")
     LiveData<List<PeriodSpendings>> byCurrencyBetween(LocalDateTime from, LocalDateTime to);
 
     @Query("SELECT currencies.name, currencies.symbol, SUM (transactions.value) AS total FROM transactions " +
             "LEFT JOIN currencies ON transactions.currency_id = currencies.isoCode " +
-            "GROUP BY transactions.currency_id ORDER BY total")
+            "GROUP BY transactions.currency_id ORDER BY total DESC")
     LiveData<List<PeriodSpendings>> byCurrency();
 
     @Query("SELECT * FROM transactions " +

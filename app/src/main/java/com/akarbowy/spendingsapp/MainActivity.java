@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     TextView periodTitleView;
     @BindView(R.id.period_from)
     TextView periodFromView;
+    @BindView(R.id.gap)
+    TextView periodGapView;
     @BindView(R.id.period_to)
     TextView periodToView;
     @BindView(R.id.group)
@@ -82,9 +84,7 @@ public class MainActivity extends AppCompatActivity {
         spendingsList.setAdapter(spendingsAdapter);
 
         vm.periodicByCurrency.observe(this, periodSpendings -> {
-            periodTitleView.setText(String.format("%s %s", vm.getSelectedPeriodTitle(), getString(R.string.home_period_arrow)));
-            periodFromView.setText(vm.getPeriodFromTitle());
-            periodToView.setText(vm.getPeriodToTitle());
+            updatePeriodViews();
             spendingsAdapter.setItems(periodSpendings);
         });
 
@@ -97,6 +97,16 @@ public class MainActivity extends AppCompatActivity {
             adapter.setList(items);
             Toast.makeText(MainActivity.this, "adding items: " + items.size(), Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void updatePeriodViews() {
+        periodTitleView.setText(String.format("%s %s", vm.getSelectedPeriodTitle(), getString(R.string.home_period_arrow)));
+
+        periodFromView.setText(vm.getPeriodFromTitle());
+        periodFromView.setEnabled(vm.isCustomPeriodSet());
+        periodGapView.setEnabled(vm.isCustomPeriodSet());
+        periodToView.setText(vm.getPeriodToTitle());
+        periodToView.setEnabled(vm.isCustomPeriodSet());
     }
 
     /*
