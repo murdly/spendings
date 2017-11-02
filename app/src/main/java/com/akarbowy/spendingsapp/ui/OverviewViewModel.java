@@ -7,7 +7,7 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.paging.PagedList;
 
-import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
+import com.akarbowy.spendingsapp.data.entities.PeriodSpendingsData;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import com.akarbowy.spendingsapp.ui.transaction.Transaction;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionRepository;
@@ -16,9 +16,6 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class OverviewViewModel extends ViewModel {
@@ -30,7 +27,7 @@ public class OverviewViewModel extends ViewModel {
 
     private SpendingsPeriod.Type type;
     private final MutableLiveData<SpendingsPeriod> period = new MutableLiveData<>();
-    public final LiveData<List<PeriodSpendings>> periodicByCurrency;
+    public final LiveData<List<PeriodSpendingsData>> periodicByCurrency;
 
     public final LiveData<PagedList<Transaction>> transactions;
 
@@ -41,7 +38,7 @@ public class OverviewViewModel extends ViewModel {
         this.setPeriod(0);
 
         transactions = repository.loadRecentTransactions();
-        periodicByCurrency = repository.getExpensesInPeriod(period);
+        periodicByCurrency = repository.getExpensesInPeriod(period, type);
     }
 
     public SpendingsPeriod getPeriod() {

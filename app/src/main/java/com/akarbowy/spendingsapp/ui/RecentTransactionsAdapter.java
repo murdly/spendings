@@ -43,6 +43,7 @@ public class RecentTransactionsAdapter extends PagedListAdapter<Transaction,
     private OnItemClickListener onItemClickListener;
     private Context context;
 
+
     public RecentTransactionsAdapter(Context context) {
         super(DIFF_CALLBACK);
         this.context = context;

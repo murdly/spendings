@@ -2,11 +2,9 @@ package com.akarbowy.spendingsapp.ui;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.LocalTime;
 import org.threeten.bp.ZoneOffset;
 
 import static com.akarbowy.spendingsapp.ui.SpendingsPeriod.Type.ALL_TIME;
-import static com.akarbowy.spendingsapp.ui.SpendingsPeriod.Type.CUSTOM;
 import static com.akarbowy.spendingsapp.ui.SpendingsPeriod.Type.PREVIOUS_MONTH;
 import static com.akarbowy.spendingsapp.ui.SpendingsPeriod.Type.THIS_MONTH;
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth;
@@ -40,7 +38,6 @@ public class SpendingsPeriod {
     }
 
     public static SpendingsPeriod custom(LocalDateTime from, LocalDateTime to) {
-
         return new SpendingsPeriod(from, to);
     }
 
@@ -50,7 +47,7 @@ public class SpendingsPeriod {
         LocalDateTime to;
         if (type == THIS_MONTH) {
             from = startOfToday.with(firstDayOfMonth());
-            to = startOfToday.minusNanos(1).with(lastDayOfMonth());
+            to = from.plusMonths(1).minusNanos(1);
             return new SpendingsPeriod(from, to);
         } else if (type == PREVIOUS_MONTH) {
             from = startOfToday.with(firstDayOfMonth()).minusMonths(1);

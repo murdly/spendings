@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.akarbowy.spendingsapp.AmountFormatUtil;
 import com.akarbowy.spendingsapp.R;
-import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
+import com.akarbowy.spendingsapp.data.entities.PeriodSpendingsData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +20,9 @@ import butterknife.ButterKnife;
 
 public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendingsAdapter.ViewHolder> {
 
-    private List<PeriodSpendings> spendings = new ArrayList<>();
+    private List<PeriodSpendingsData> spendings = new ArrayList<>();
 
-    public void setItems(List<PeriodSpendings> items) {
+    public void setItems(List<PeriodSpendingsData> items) {
         spendings.clear();
         spendings.addAll(items);
         notifyDataSetChanged();
@@ -36,7 +36,7 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        PeriodSpendings item = spendings.get(position);
+        PeriodSpendingsData item = spendings.get(position);
         holder.valueView.setText(String.format("%1$s %2$s", AmountFormatUtil.format(item.total), item.symbol));
         holder.changeValueView.setText("todo%");
     }

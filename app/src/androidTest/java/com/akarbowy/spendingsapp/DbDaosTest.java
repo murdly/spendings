@@ -13,7 +13,7 @@ import com.akarbowy.spendingsapp.data.daos.CurrencyDao;
 import com.akarbowy.spendingsapp.data.daos.TransactionDao;
 import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
-import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
+import com.akarbowy.spendingsapp.data.entities.PeriodSpendingsData;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 
 import org.junit.After;
@@ -131,10 +131,10 @@ public class DbDaosTest {
 
         transactionDao.insert(list);
 
-        List<PeriodSpendings> allByCurrency = LiveDataTestUtil.getValue(transactionDao.byCurrencyBetween(from, to));
+        List<PeriodSpendingsData> allByCurrency = LiveDataTestUtil.getValue(transactionDao.byCurrencyBetween(from, to));
 
         float totalSpendingsInCurrency = 0;
-        for (PeriodSpendings spendings : allByCurrency) {
+        for (PeriodSpendingsData spendings : allByCurrency) {
             if(spendings.name.equals(currency.name)){
                 totalSpendingsInCurrency = (float) spendings.total;
                 break;

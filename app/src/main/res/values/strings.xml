@@ -5,6 +5,9 @@
     <string name="home_label_recent">Recent</string>
     <string name="home_label_add">Add</string>
     <string name="home_period_arrow">&#x25BE;</string>
+    <string name="home_empty_state_period_spendings">You haven\'t spent a penny, happy?</string>
+    <string name="home_empty_state_recent_title">Nothing!</string>
+    <string name="home_empty_state_recent_subtitle">Your transaction list is empty.</string>
 
 
     //Transaction screen

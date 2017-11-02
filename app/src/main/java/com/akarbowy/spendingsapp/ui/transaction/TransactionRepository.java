@@ -1,15 +1,19 @@
 package com.akarbowy.spendingsapp.ui.transaction;
 
+import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.Transformations;
 import android.arch.paging.PagedList;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 import com.akarbowy.spendingsapp.data.entities.GroupedCategories;
-import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
+import com.akarbowy.spendingsapp.data.entities.PeriodSpendingsData;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import com.akarbowy.spendingsapp.ui.SpendingsPeriod;
 
@@ -53,13 +57,22 @@ public class TransactionRepository {
                         .build());
     }
 
-    public LiveData<List<PeriodSpendings>> getExpensesInPeriod(MutableLiveData<SpendingsPeriod> period){
+    public LiveData<List<PeriodSpendingsData>> getExpensesInPeriod(MutableLiveData<SpendingsPeriod> period, SpendingsPeriod.Type type){
         return Transformations.switchMap(period, input -> {
-            if (input == null) {
-                return database.transactionDao().byCurrency();
-            }
+            LiveData<List<PeriodSpendingsData>> result = database.transactionDao().byCurrencyBetween(input.from(), input.to());
 
-            return database.transactionDao().byCurrencyBetween(input.from(), input.to());
+            if(type != SpendingsPeriod.Type.THIS_MONTH){
+                return result;
+            }else {
+                SpendingsPeriod prevMonth = SpendingsPeriod.of(SpendingsPeriod.Type.PREVIOUS_MONTH);
+                LiveData<List<PeriodSpendingsData>> prevMonthData =
+                        database.transactionDao().byCurrencyBetween(prevMonth.from(), prevMonth.to());
+
+                MediatorLiveData<List<PeriodSpendingsData>> merged = new MediatorLiveData<>();
+                merged.addSource(result, v -> merged.setValue(v));
+                merged.addSource(prevMonthData, v -> merged.setValue(v));
+                return merged;
+            }
         });
     }
 

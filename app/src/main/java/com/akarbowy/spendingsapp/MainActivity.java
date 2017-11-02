@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
+import com.akarbowy.spendingsapp.helpers.NoItemsHelper;
 import com.akarbowy.spendingsapp.ui.OverviewViewModel;
 import com.akarbowy.spendingsapp.ui.PeriodSpendingsAdapter;
 import com.akarbowy.spendingsapp.ui.RecentTransactionsAdapter;
@@ -29,13 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.home_add)
     Button addNewView;
-    @BindView(R.id.list)
-    RecyclerView recentTransactionsList;
-    @BindView(R.id.spendings_list)
-    RecyclerView spendingsList;
-
     @BindView(R.id.period_title)
     TextView periodTitleView;
+
     @BindView(R.id.period_from)
     TextView periodFromView;
     @BindView(R.id.gap)
@@ -44,6 +41,14 @@ public class MainActivity extends AppCompatActivity {
     TextView periodToView;
     @BindView(R.id.group)
     Group customPeriodGroup;
+    @BindView(R.id.spendings_list)
+    RecyclerView spendingsList;
+    @BindView(R.id.spendings_list_empty_view)
+    View emptyViewForSpendingsList;
+    @BindView(R.id.recent_list)
+    RecyclerView recentTransactionsList;
+    @BindView(R.id.recent_list_empty_view)
+    View emptyViewForRecentList;
 
     private AppDatabase appDatabase;
     private PeriodSpendingsAdapter spendingsAdapter;
@@ -82,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         layout.setOrientation(LinearLayoutManager.HORIZONTAL);
         spendingsList.setLayoutManager(layout);
         spendingsList.setAdapter(spendingsAdapter);
+        new NoItemsHelper(emptyViewForSpendingsList).attachToRecyclerView(spendingsList);
 
         vm.periodicByCurrency.observe(this, periodSpendings -> {
             updatePeriodViews();
@@ -92,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnItemClickListener(onTransactionItemClickListener);
         recentTransactionsList.setLayoutManager(new LinearLayoutManager(this));
         recentTransactionsList.setAdapter(adapter);
+        new NoItemsHelper(emptyViewForRecentList).attachToRecyclerView(recentTransactionsList);
+
 
         vm.transactions.observe(this, items -> {
             adapter.setList(items);

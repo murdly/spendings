@@ -14,7 +14,7 @@ import com.akarbowy.spendingsapp.data.entities.CategoryGroupEntity;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 
-@Database(version = 23, entities = {CategoryEntity.class, CategoryGroupEntity.class, CurrencyEntity.class, TransactionEntity.class})
+@Database(version = 24, entities = {CategoryEntity.class, CategoryGroupEntity.class, CurrencyEntity.class, TransactionEntity.class})
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 

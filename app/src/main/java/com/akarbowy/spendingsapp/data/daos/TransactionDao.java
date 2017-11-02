@@ -7,7 +7,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
-import com.akarbowy.spendingsapp.data.entities.PeriodSpendings;
+import com.akarbowy.spendingsapp.data.entities.PeriodSpendingsData;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import com.akarbowy.spendingsapp.ui.transaction.Transaction;
 
@@ -31,12 +31,12 @@ public interface TransactionDao {
             "LEFT JOIN currencies ON transactions.currency_id = currencies.isoCode " +
             "WHERE transactions.date between :from and :to AND transactions.deleted = 0 " +
             "GROUP BY transactions.currency_id ORDER BY total DESC")
-    LiveData<List<PeriodSpendings>> byCurrencyBetween(LocalDateTime from, LocalDateTime to);
+    LiveData<List<PeriodSpendingsData>> byCurrencyBetween(LocalDateTime from, LocalDateTime to);
 
     @Query("SELECT currencies.name, currencies.symbol, SUM (transactions.value) AS total FROM transactions " +
             "LEFT JOIN currencies ON transactions.currency_id = currencies.isoCode " +
             "GROUP BY transactions.currency_id ORDER BY total DESC")
-    LiveData<List<PeriodSpendings>> byCurrency();
+    LiveData<List<PeriodSpendingsData>> byCurrency();
 
     @Query("SELECT * FROM transactions " +
             "INNER JOIN categories ON transactions.category_id = categories.categoryEntityId " +

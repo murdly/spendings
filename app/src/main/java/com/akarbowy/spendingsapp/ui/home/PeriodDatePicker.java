@@ -38,7 +38,7 @@ public class PeriodDatePicker extends DialogFragment
         } else { //periodTo
             last = vm.getPeriod().to().toLocalDate();
             min = vm.getPeriod().from().toInstant(ZonedDateTime.now(ZoneOffset.UTC).getOffset()).toEpochMilli();
-            max = System.currentTimeMillis();
+            max = Math.min(System.currentTimeMillis(), vm.getPeriod().to().toInstant(ZonedDateTime.now(ZoneOffset.UTC).getOffset()).toEpochMilli());
         }
 
         DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, last.getYear(), last.getMonthValue(), last.getDayOfMonth());
