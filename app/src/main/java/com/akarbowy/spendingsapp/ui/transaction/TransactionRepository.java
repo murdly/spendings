@@ -1,13 +1,9 @@
 package com.akarbowy.spendingsapp.ui.transaction;
 
-import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.Transformations;
 import android.arch.paging.PagedList;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
@@ -24,10 +20,9 @@ import java.util.List;
  */
 
 public class TransactionRepository {
-    private final AppDatabase database;
-
     public final LiveData<List<GroupedCategories>> categories;
     public final LiveData<List<CurrencyEntity>> currencies;
+    private final AppDatabase database;
 
     public TransactionRepository(AppDatabase database) {
         this.database = database;
@@ -57,11 +52,13 @@ public class TransactionRepository {
                         .build());
     }
 
-    public LiveData<List<PeriodSpendingsData>> getExpensesInPeriod(MutableLiveData<SpendingsPeriod> period, SpendingsPeriod.Type type){
+    public LiveData<List<PeriodSpendingsData>> getExpensesInPeriod(MutableLiveData<SpendingsPeriod> period, SpendingsPeriod.Type type) {
         return Transformations.switchMap(period, input -> {
             LiveData<List<PeriodSpendingsData>> result = database.transactionDao().byCurrencyBetween(input.from(), input.to());
+            return result;
 
-            if(type != SpendingsPeriod.Type.THIS_MONTH){
+            //TODO merge with previous month to make comparision possible later on
+            /*if(type != SpendingsPeriod.Type.THIS_MONTH){
                 return result;
             }else {
                 SpendingsPeriod prevMonth = SpendingsPeriod.of(SpendingsPeriod.Type.PREVIOUS_MONTH);
@@ -72,7 +69,7 @@ public class TransactionRepository {
                 merged.addSource(result, v -> merged.setValue(v));
                 merged.addSource(prevMonthData, v -> merged.setValue(v));
                 return merged;
-            }
+            }*/
         });
     }
 
