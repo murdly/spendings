@@ -10,15 +10,12 @@ import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 
 import com.akarbowy.spendingsapp.ui.OverviewViewModel;
-import com.akarbowy.spendingsapp.ui.transaction.TransactionViewModel;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.LocalTime;
 import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.ZonedDateTime;
-
-import java.util.Calendar;
 
 public class PeriodDatePicker extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {

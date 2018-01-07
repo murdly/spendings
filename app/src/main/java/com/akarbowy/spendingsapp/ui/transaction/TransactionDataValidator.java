@@ -4,9 +4,6 @@ import android.support.design.widget.TextInputEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 
-/**
- * Created by arek.karbowy on 30/10/2017.
- */
 class TransactionDataValidator {
 
     private final String errorMessage;

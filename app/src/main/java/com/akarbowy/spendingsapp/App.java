@@ -5,7 +5,6 @@ import android.app.Application;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.Dictionaries;
-import com.akarbowy.spendingsapp.data.PredefinedData;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 import com.facebook.stetho.Stetho;
 import com.jakewharton.threetenabp.AndroidThreeTen;

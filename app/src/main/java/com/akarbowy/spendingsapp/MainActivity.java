@@ -18,7 +18,6 @@ import com.akarbowy.spendingsapp.ui.OverviewViewModel;
 import com.akarbowy.spendingsapp.ui.PeriodSpendingsAdapter;
 import com.akarbowy.spendingsapp.ui.RecentTransactionsAdapter;
 import com.akarbowy.spendingsapp.ui.home.PeriodDatePicker;
-import com.akarbowy.spendingsapp.ui.transaction.Transaction;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionActivity;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionRepository;
 
@@ -50,39 +49,29 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.recent_list_empty_view)
     View emptyViewForRecentList;
 
-    private AppDatabase appDatabase;
-    private PeriodSpendingsAdapter spendingsAdapter;
     private OverviewViewModel vm;
-    private RecentTransactionsAdapter.OnItemClickListener onTransactionItemClickListener = new RecentTransactionsAdapter.OnItemClickListener() {
-        @Override
-        public void onItemClick(final Transaction item) {
-            showUpdateDialog(new OnTransactionActionListener() {
-                @Override
-                public void onEdit() {
-                    startActivity(TransactionActivity.newEditIntent(MainActivity.this,
-                            item.transaction.transactionId));
-                }
-
-                @Override
-                public void onDelete() {
-                    vm.onDeleteTransaction(item.transaction);
-                }
-            });
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        appDatabase = AppDatabase.getInstance(this);
 
+        init();
+    }
+
+    private void init() {
         vm = ViewModelProviders.of(this,
-                new OverviewViewModel.Factory(new TransactionRepository(appDatabase)))
+                new OverviewViewModel.Factory(new TransactionRepository(AppDatabase.getInstance(this))))
                 .get(OverviewViewModel.class);
 
-        spendingsAdapter = new PeriodSpendingsAdapter();
+        setupOverview();
+
+        setupRecentTransactions();
+    }
+
+    private void setupOverview() {
+        final PeriodSpendingsAdapter spendingsAdapter = new PeriodSpendingsAdapter();
         LinearLayoutManager layout = new LinearLayoutManager(this);
         layout.setOrientation(LinearLayoutManager.HORIZONTAL);
         spendingsList.setLayoutManager(layout);
@@ -92,18 +81,6 @@ public class MainActivity extends AppCompatActivity {
         vm.periodicByCurrency.observe(this, periodSpendings -> {
             updatePeriodViews();
             spendingsAdapter.setItems(periodSpendings);
-        });
-
-        final RecentTransactionsAdapter adapter = new RecentTransactionsAdapter(this);
-        adapter.setOnItemClickListener(onTransactionItemClickListener);
-        recentTransactionsList.setLayoutManager(new LinearLayoutManager(this));
-        recentTransactionsList.setAdapter(adapter);
-        new NoItemsHelper(emptyViewForRecentList).attachToRecyclerView(recentTransactionsList);
-
-
-        vm.transactions.observe(this, items -> {
-            adapter.setList(items);
-            Toast.makeText(MainActivity.this, "adding items: " + items.size(), Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -115,6 +92,30 @@ public class MainActivity extends AppCompatActivity {
         periodGapView.setEnabled(vm.isCustomPeriodSet());
         periodToView.setText(vm.getPeriodToTitle());
         periodToView.setEnabled(vm.isCustomPeriodSet());
+    }
+
+    private void setupRecentTransactions() {
+        final RecentTransactionsAdapter adapter = new RecentTransactionsAdapter(this);
+        adapter.setOnItemClickListener(item -> showUpdateDialog(new OnTransactionActionListener() {
+            @Override
+            public void onEdit() {
+                startActivity(TransactionActivity.newEditIntent(MainActivity.this,
+                        item.transaction.transactionId));
+            }
+
+            @Override
+            public void onDelete() {
+                vm.onDeleteTransaction(item.transaction);
+            }
+        }));
+        recentTransactionsList.setLayoutManager(new LinearLayoutManager(this));
+        recentTransactionsList.setAdapter(adapter);
+        new NoItemsHelper(emptyViewForRecentList).attachToRecyclerView(recentTransactionsList);
+
+        vm.transactions.observe(this, items -> {
+            adapter.setList(items);
+            Toast.makeText(MainActivity.this, "adding items: " + items.size(), Toast.LENGTH_SHORT).show();
+        });
     }
 
     /*

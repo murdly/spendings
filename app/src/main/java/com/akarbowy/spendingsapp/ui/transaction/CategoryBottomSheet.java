@@ -38,7 +38,7 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.transaction_category_content, container);
+        final View view = inflater.inflate(R.layout.transaction_category_content, container);
         ButterKnife.bind(this, view);
         return view;
     }
@@ -51,7 +51,7 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
 
         sectionAdapter = new SectionedRecyclerViewAdapter();
 
-        GridLayoutManager glm = new GridLayoutManager(getContext(), 4);
+        final GridLayoutManager glm = new GridLayoutManager(getContext(), 4);
         glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -108,9 +108,9 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
 
     private class CategorySection extends StatelessSection {
 
-        String title;
-        List<CategoryEntity> items;
-        boolean expanded = false;
+        private final String title;
+        private final List<CategoryEntity> items;
+        private boolean expanded = false;
 
         CategorySection(String title, List<CategoryEntity> items) {
             super(new SectionParameters.Builder(R.layout.transaction_category_item)

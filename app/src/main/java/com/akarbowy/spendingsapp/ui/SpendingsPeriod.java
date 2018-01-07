@@ -8,11 +8,7 @@ import static com.akarbowy.spendingsapp.ui.SpendingsPeriod.Type.ALL_TIME;
 import static com.akarbowy.spendingsapp.ui.SpendingsPeriod.Type.PREVIOUS_MONTH;
 import static com.akarbowy.spendingsapp.ui.SpendingsPeriod.Type.THIS_MONTH;
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth;
-import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
 
-/**
- * Created by arek.karbowy on 31/10/2017.
- */
 public class SpendingsPeriod {
 
     public enum Type {

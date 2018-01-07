@@ -7,10 +7,6 @@ import com.akarbowy.spendingsapp.data.entities.CategoryGroupEntity;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 
-/**
- * Created by arek.karbowy on 27/10/2017.
- */
-
 public class Transaction {
     @Embedded
     public TransactionEntity transaction;

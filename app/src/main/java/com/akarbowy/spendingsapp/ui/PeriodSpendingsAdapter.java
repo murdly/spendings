@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.akarbowy.spendingsapp.AmountFormatUtil;
@@ -38,7 +37,6 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
     public void onBindViewHolder(ViewHolder holder, int position) {
         PeriodSpendingsData item = spendings.get(position);
         holder.valueView.setText(String.format("%1$s %2$s", AmountFormatUtil.format(item.total), item.symbol));
-        holder.changeValueView.setText("todo%");
     }
 
     @Override
@@ -50,10 +48,12 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
 
         @BindView(R.id.spendings_card_value)
         TextView valueView;
+
+        /*TODO feature-1
         @BindView(R.id.spendings_card_change_icon)
         ImageView changeIconView;
         @BindView(R.id.spendings_card_change_value)
-        TextView changeValueView;
+        TextView changeValueView;*/
 
         public ViewHolder(View itemView) {
             super(itemView);

@@ -57,7 +57,7 @@ public class TransactionRepository {
             LiveData<List<PeriodSpendingsData>> result = database.transactionDao().byCurrencyBetween(input.from(), input.to());
             return result;
 
-            //TODO merge with previous month to make comparision possible later on
+            //TODO feature-1: merge with previous month to make comparision possible later on
             /*if(type != SpendingsPeriod.Type.THIS_MONTH){
                 return result;
             }else {

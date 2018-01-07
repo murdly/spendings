@@ -36,12 +36,11 @@ public class CurrencyBottomSheet extends BottomSheetDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final TransactionViewModel viewModel = ViewModelProviders.of(getActivity()).get(TransactionViewModel.class);
-
-        CurrencyAdapter adapter = new CurrencyAdapter();
+        final CurrencyAdapter adapter = new CurrencyAdapter();
         listView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         listView.setAdapter(adapter);
 
+        final TransactionViewModel viewModel = ViewModelProviders.of(getActivity()).get(TransactionViewModel.class);
         viewModel.currencies.observe(getActivity(), adapter::setItems);
 
         adapter.setCallback(chosen -> {

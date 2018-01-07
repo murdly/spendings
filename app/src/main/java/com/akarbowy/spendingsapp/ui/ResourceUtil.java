@@ -4,10 +4,6 @@ import android.content.Context;
 
 import com.akarbowy.spendingsapp.R;
 
-/**
- * Created by arek.karbowy on 30/10/2017.
- */
-
 public class ResourceUtil {
 
 

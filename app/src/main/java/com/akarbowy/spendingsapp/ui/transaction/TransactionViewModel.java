@@ -7,31 +7,24 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
 import com.akarbowy.spendingsapp.App;
-import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
+import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 import com.akarbowy.spendingsapp.data.entities.GroupedCategories;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 
-import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.List;
 
-
-/**
- * Created by arek.karbowy on 20/10/2017.
- */
-
 public class TransactionViewModel extends ViewModel {
 
     public static final int UNDEFINED_TRANSACTION_ID = 0;
-    private TransactionRepository repository;
     public final LiveData<List<GroupedCategories>> groupedCategories;
     public final LiveData<List<CurrencyEntity>> currencies;
     public final LiveData<Transaction> transaction;
-
+    private TransactionRepository repository;
     private MutableLiveData<Integer> transactionId = new MutableLiveData<>();
 
     private Double value = null;

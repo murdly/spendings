@@ -8,7 +8,6 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -39,8 +38,8 @@ public class TransactionActivity extends AppCompatActivity {
     @BindView(R.id.transaction_container)
     ViewGroup containerView;
 
-    TransactionViewModel viewModel;
-    TransactionDataValidator validator;
+    private TransactionViewModel viewModel;
+    private TransactionDataValidator validator;
 
     public static Intent newAddIntent(Context context) {
         return new Intent(context, TransactionActivity.class);
@@ -58,59 +57,50 @@ public class TransactionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_transaction);
         ButterKnife.bind(this);
 
+        init();
+    }
+
+    private void init() {
         viewModel = ViewModelProviders.of(this,
                 new TransactionViewModel.Factory(new TransactionRepository(AppDatabase.getInstance(this))))
                 .get(TransactionViewModel.class);
 
-        int transactionId = getIntent().getIntExtra(EXTRA_TRANSACTION_ID, TransactionViewModel.UNDEFINED_TRANSACTION_ID);
+        validator = new TransactionDataValidator(new TextInputEditText[]{
+                valueValueInput, categoryValueInput, nameValueInput}, "Must be set");
 
-        deleteButton.setVisibility(transactionId == TransactionViewModel.UNDEFINED_TRANSACTION_ID ? View.GONE : View.VISIBLE);
+        initTransaction();
 
+        observeTransactionDataChanges();
+    }
+
+    private void initTransaction() {
+        final int transactionId = getIntent().getIntExtra(EXTRA_TRANSACTION_ID, TransactionViewModel.UNDEFINED_TRANSACTION_ID);
         viewModel.start(transactionId);
+        viewModel.transaction.observe(this, this::setTransactionData);
 
-        viewModel.transaction.observe(this, t -> {
-            if (t != null) {
-                Log.d("xxTA2", t.toString());
+        final boolean isEditingTransaction = transactionId != TransactionViewModel.UNDEFINED_TRANSACTION_ID;
+        deleteButton.setVisibility(isEditingTransaction ? View.VISIBLE : View.GONE);
+    }
 
-                viewModel.setLocalDateTime(t.transaction.date);
-                viewModel.setCurrency(t.currency);
-                viewModel.setCategory(t.category);
-                viewModel.setValue(t.transaction.value);
-                viewModel.setName(t.transaction.title);
+    private void setTransactionData(Transaction t) {
+        if (t != null) {
+            viewModel.setLocalDateTime(t.transaction.date);
+            viewModel.setCurrency(t.currency);
+            viewModel.setCategory(t.category);
+            viewModel.setValue(t.transaction.value);
+            viewModel.setName(t.transaction.title);
 
-                valueValueInput.setText(String.valueOf(t.transaction.value));
-                nameValueInput.setText(t.transaction.title);
-            }
-        });
+            valueValueInput.setText(String.valueOf(t.transaction.value));
+            nameValueInput.setText(t.transaction.title);
+        }
+    }
 
+    private void observeTransactionDataChanges() {
         viewModel.getFormattedDate().observe(this, s -> dateValueInput.setText(s));
 
         viewModel.getChosenCurrency().observe(this, currency -> currencyValueInput.setText(currency.isoCode));
 
         viewModel.getChosenCategory().observe(this, categoryEntity -> categoryValueInput.setText(categoryEntity.categoryName));
-
-
-        validator = new TransactionDataValidator(new TextInputEditText[]{
-                valueValueInput, categoryValueInput, nameValueInput}, "Must be set");
-
-        valueValueInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String text = s.toString();
-                Double value = !text.isEmpty() ? Double.valueOf(text) : null;
-                viewModel.setValue(value);
-            }
-        });
 
         nameValueInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -129,6 +119,24 @@ public class TransactionActivity extends AppCompatActivity {
             }
         });
 
+        valueValueInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                final String text = s.toString();
+                final Double value = !text.isEmpty() ? Double.valueOf(text) : null;
+                viewModel.setValue(value);
+            }
+        });
     }
 
     @OnClick(R.id.transaction_delete)
@@ -147,19 +155,19 @@ public class TransactionActivity extends AppCompatActivity {
 
     @OnClick(R.id.transaction_fields_category_value)
     public void onCategoryValueClick() {
-        CategoryBottomSheet sheet = new CategoryBottomSheet();
+        final CategoryBottomSheet sheet = new CategoryBottomSheet();
         sheet.show(getSupportFragmentManager(), "category");
     }
 
     @OnClick(R.id.transaction_fields_currency_value)
     public void onCurrencyValueClick() {
-        CurrencyBottomSheet sheet = new CurrencyBottomSheet();
+        final CurrencyBottomSheet sheet = new CurrencyBottomSheet();
         sheet.show(getSupportFragmentManager(), "currency");
     }
 
     @OnClick(R.id.transaction_fields_date_value)
     public void onDateValueClick() {
-        TransactionDatePicker picker = new TransactionDatePicker();
+        final TransactionDatePicker picker = new TransactionDatePicker();
         picker.show(getSupportFragmentManager(), "date");
     }
 }

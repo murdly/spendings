@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.akarbowy.spendingsapp.R;
-import com.akarbowy.spendingsapp.data.Dictionaries;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 
 import java.util.ArrayList;
@@ -15,10 +14,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-/**
- * Created by arek.karbowy on 20/10/2017.
- */
 
 public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.ViewHolder> {
 
@@ -41,14 +36,14 @@ public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.ViewHo
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         return new CurrencyAdapter.ViewHolder(inflater.inflate(R.layout.transaction_currency_item, parent, false));
 
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        CurrencyEntity currency = items.get(position);
+        final CurrencyEntity currency = items.get(position);
         holder.textView.setText(currency.isoCode);
         holder.itemView.setOnClickListener(view -> {
             if (callback != null) {
