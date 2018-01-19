@@ -1,8 +1,4 @@
-package com.akarbowy.spendingsapp;
-
-/**
- * Created by arek.karbowy on 20/10/2017.
- */
+package com.akarbowy.spendingsapp.helpers;
 
 public class AmountFormatUtil {
 

@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.paging.PagedList;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
@@ -14,10 +15,6 @@ import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import com.akarbowy.spendingsapp.ui.SpendingsPeriod;
 
 import java.util.List;
-
-/**
- * Created by arek.karbowy on 27/10/2017.
- */
 
 public class TransactionRepository {
     public final LiveData<List<GroupedCategories>> categories;
@@ -75,7 +72,7 @@ public class TransactionRepository {
 
     public void saveTransaction(TransactionEntity transaction) {
         Log.d("REPO", "saveTransaction| " + transaction.toString());
-        database.transactionDao().insertTransaction(transaction);
+        AsyncTask.execute(() -> database.transactionDao().insertTransaction(transaction));
     }
 
     public void updateTransaction(TransactionEntity transaction) {

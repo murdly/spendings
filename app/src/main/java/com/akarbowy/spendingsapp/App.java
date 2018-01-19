@@ -2,10 +2,13 @@ package com.akarbowy.spendingsapp;
 
 
 import android.app.Application;
+import android.os.AsyncTask;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.Dictionaries;
+import com.akarbowy.spendingsapp.data.PredefinedData;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
+import com.akarbowy.spendingsapp.managers.PreferencesManager;
 import com.facebook.stetho.Stetho;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
@@ -24,8 +27,16 @@ public class App extends Application {
 
         AppDatabase appDatabase = AppDatabase.getInstance(this);
 
-//        appDatabase.categoryDao().insert(PredefinedData.getCategories());
-//        appDatabase.currencyDao().insert(PredefinedData.getCurrencies());
-//        appDatabase.transactionDao().insert(PopulateUtil.createListOfTransactions());
+        PreferencesManager preferencesManager = new PreferencesManager(getApplicationContext());
+
+        if (!preferencesManager.isPredefinedDataLoaded()) {
+            AsyncTask.execute(() -> {
+                appDatabase.categoryDao().insert(PredefinedData.getCategories());
+                appDatabase.currencyDao().insert(PredefinedData.getCurrencies());
+                preferencesManager.setPredefinedDataLoaded();
+            });
+        }
+
+        //        appDatabase.transactionDao().insert(PopulateUtil.createListOfTransactions());
     }
 }

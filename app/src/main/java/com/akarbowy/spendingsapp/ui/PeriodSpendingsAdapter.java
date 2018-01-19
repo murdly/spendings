@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.akarbowy.spendingsapp.AmountFormatUtil;
+import com.akarbowy.spendingsapp.helpers.AmountFormatUtil;
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendingsData;
 

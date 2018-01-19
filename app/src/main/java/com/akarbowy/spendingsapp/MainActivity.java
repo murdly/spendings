@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.helpers.NoItemsHelper;
@@ -112,10 +111,7 @@ public class MainActivity extends AppCompatActivity {
         recentTransactionsList.setAdapter(adapter);
         new NoItemsHelper(emptyViewForRecentList).attachToRecyclerView(recentTransactionsList);
 
-        vm.transactions.observe(this, items -> {
-            adapter.setList(items);
-            Toast.makeText(MainActivity.this, "adding items: " + items.size(), Toast.LENGTH_SHORT).show();
-        });
+        vm.transactions.observe(this, adapter::setList);
     }
 
     /*
