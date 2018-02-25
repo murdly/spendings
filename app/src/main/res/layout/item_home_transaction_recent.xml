@@ -25,17 +25,18 @@
 
     <TextView
         android:id="@+id/itemTransactionTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:ellipsize="end"
-        android:maxLength="20"
+        android:maxLength="30"
         android:maxLines="1"
         android:textColor="@color/colorPrimaryText"
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/itemTransactionValue"
         app:layout_constraintStart_toEndOf="@+id/itemTransactionIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="TransactioTransaction Transactiddddddonn"/>

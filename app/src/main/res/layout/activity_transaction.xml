@@ -102,7 +102,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/transaction_field_hint_title"
-                android:inputType="textNoSuggestions|textFilter|textVisiblePassword"
+                android:maxLength="30"
+                android:inputType="textNoSuggestions|textFilter|textVisiblePassword|textCapSentences"
                 android:privateImeOptions="nm"
                 tools:text="@string/transaction_field_default_title" />
         </android.support.design.widget.TextInputLayout>
