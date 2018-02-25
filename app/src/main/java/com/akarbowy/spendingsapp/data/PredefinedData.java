@@ -11,10 +11,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-/**
- * Created by arek.karbowy on 26/10/2017.
- */
-
 public class PredefinedData {
 
 
@@ -23,16 +19,16 @@ public class PredefinedData {
 
 
     public static List<GroupedCategories> getCategories() {
-        List<GroupedCategories> list = new ArrayList<>();
+        final List<GroupedCategories> list = new ArrayList<>();
 
         for (CategoryGroup group : EnumSet.allOf(CategoryGroup.class)) {
 
-            List<CategoryEntity> categories = new ArrayList<>();
+            final List<CategoryEntity> categories = new ArrayList<>();
             for (CategoryGroup.Category category : group.categories) {
                 categories.add(new CategoryEntity(category.title));
             }
 
-            GroupedCategories groupedCategories = new GroupedCategories();
+            final GroupedCategories groupedCategories = new GroupedCategories();
             groupedCategories.group = new CategoryGroupEntity(group.title);
             groupedCategories.categories = categories;
 
@@ -43,7 +39,7 @@ public class PredefinedData {
     }
 
     public static List<CurrencyEntity> getCurrencies() {
-        List<CurrencyEntity> list = new ArrayList<>();
+        final List<CurrencyEntity> list = new ArrayList<>();
 
         for (Currency currency : EnumSet.allOf(Currency.class)) {
             list.add(new CurrencyEntity(currency.symbol, currency.isoCode, currency.title));

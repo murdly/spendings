@@ -5,7 +5,6 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.paging.PagedList;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
@@ -16,24 +15,15 @@ import com.akarbowy.spendingsapp.ui.SpendingsPeriod;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class TransactionRepository {
-    public final LiveData<List<GroupedCategories>> categories;
-    public final LiveData<List<CurrencyEntity>> currencies;
+
+
     private final AppDatabase database;
 
     public TransactionRepository(AppDatabase database) {
         this.database = database;
-
-        categories = database.categoryDao().allGrouped();
-        currencies = database.currencyDao().all();
-    }
-
-    public LiveData<List<CurrencyEntity>> getCurrencies() {
-        return currencies;
-    }
-
-    public LiveData<List<GroupedCategories>> getCategories() {
-        return categories;
     }
 
     public LiveData<Transaction> loadTransaction(int id) {
@@ -70,14 +60,22 @@ public class TransactionRepository {
         });
     }
 
+    public void saveTransactions(List<TransactionEntity> transactions) {
+        for (TransactionEntity transaction : transactions) {
+            saveTransaction(transaction);
+        }
+    }
+
     public void saveTransaction(TransactionEntity transaction) {
-        Log.d("REPO", "saveTransaction| " + transaction.toString());
         AsyncTask.execute(() -> database.transactionDao().insertTransaction(transaction));
+
+        Timber.i("saveTransaction| %s", transaction.toString());
     }
 
     public void updateTransaction(TransactionEntity transaction) {
         //Deleted entries will be shown as disabled, so they should be updated instead
-        TransactionEntity copy = new TransactionEntity();
+        final TransactionEntity copy = new TransactionEntity();
+
         copy.transactionId = transaction.transactionId;
         copy.deleted = true;
         copy.title = transaction.title;

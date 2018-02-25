@@ -14,12 +14,16 @@ import android.widget.Button;
 
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.AppDatabase;
+import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
+import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
+import com.akarbowy.spendingsapp.ui.category.CategoryBottomSheet;
+import com.akarbowy.spendingsapp.ui.currency.CurrencyBottomSheet;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class TransactionActivity extends AppCompatActivity {
+public class TransactionActivity extends AppCompatActivity implements CategoryBottomSheet.Callback, CurrencyBottomSheet.Callback {
 
     private static final String EXTRA_TRANSACTION_ID = "extra_transaction_id";
 
@@ -159,10 +163,18 @@ public class TransactionActivity extends AppCompatActivity {
         sheet.show(getSupportFragmentManager(), "category");
     }
 
+    @Override public void onCategoryChosen(Bundle bundle, CategoryEntity chosen) {
+        viewModel.setCategory(chosen);
+    }
+
     @OnClick(R.id.transaction_fields_currency_value)
     public void onCurrencyValueClick() {
         final CurrencyBottomSheet sheet = new CurrencyBottomSheet();
         sheet.show(getSupportFragmentManager(), "currency");
+    }
+
+    @Override public void onCurrencyChosen(Bundle bundle, CurrencyEntity chosen) {
+        viewModel.setCurrency(chosen);
     }
 
     @OnClick(R.id.transaction_fields_date_value)

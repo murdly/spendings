@@ -1,16 +1,26 @@
 <resources>
     <string name="app_name">SpendingsApp</string>
 
-    //Home screen
+    <!--Home screen-->
     <string name="home_label_recent">Recent</string>
     <string name="home_label_add">Add</string>
     <string name="home_period_arrow">&#x25BE;</string>
     <string name="home_empty_state_period_spendings">You haven\'t spent a penny, happy?</string>
     <string name="home_empty_state_recent_title">Nothing!</string>
     <string name="home_empty_state_recent_subtitle">Your transaction list is empty.</string>
+    <!--end of Home screen-->
+
+    <!--Import screen-->
+    <string name="title_activity_import">Import</string>
+    <string name="import_button_file">Choose file</string>
+    <string name="import_button_save">Save</string>
+    <string name="import_label_set_category">Set category</string>
+    <string name="import_label_currency">Currency</string>
+    <!--end Import screen-->
 
 
-    //Transaction screen
+
+    <!--Transaction screen-->
     <string name="title_activity_transaction">Transaction</string>
     <string name="transaction_field_default_title">Transaction</string>
     <string name="transaction_field_default_category">Other</string>
@@ -25,4 +35,6 @@
     <string name="transaction_fields_category">Category</string>
     <string name="transaction_fields_currency">Currency</string>
     <string name="transaction_na_more">More</string>
+    <!--end of Transaction screen-->
+
 </resources>

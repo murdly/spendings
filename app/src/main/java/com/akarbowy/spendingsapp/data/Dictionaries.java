@@ -33,10 +33,6 @@ import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Undefined;
 import static com.akarbowy.spendingsapp.data.Dictionaries.CategoryGroup.Category.Utilities;
 
-/**
- * Created by arek.karbowy on 26/10/2017.
- */
-
 public interface Dictionaries {
 
     enum Currency {
