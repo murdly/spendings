@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SpendingsApp</string>
+    <string name="app_name">Spendings</string>
 
     <!--Home screen-->
     <string name="home_label_recent">Recent</string>
