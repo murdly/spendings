@@ -12,10 +12,12 @@ import com.akarbowy.spendingsapp.managers.PreferencesManager;
 import com.facebook.stetho.Stetho;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
+import timber.log.Timber;
+
 
 public class App extends Application {
 
-    public static Dictionaries.Currency DC = Dictionaries.Currency.PLN;
+    public static Dictionaries.Currency DC = Dictionaries.Currency.GBP;
     public static CurrencyEntity DEFAULT_CURRENCY = new CurrencyEntity(DC.symbol, DC.isoCode, DC.title);
 
     @Override
@@ -23,7 +25,11 @@ public class App extends Application {
         super.onCreate();
 
         AndroidThreeTen.init(this);
-        Stetho.initializeWithDefaults(this);
+
+        if (BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this);
+            Timber.plant(new Timber.DebugTree());
+        }
 
         AppDatabase appDatabase = AppDatabase.getInstance(this);
 
@@ -37,6 +43,5 @@ public class App extends Application {
             });
         }
 
-        //        appDatabase.transactionDao().insert(PopulateUtil.createListOfTransactions());
     }
 }

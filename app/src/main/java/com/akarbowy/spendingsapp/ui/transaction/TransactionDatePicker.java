@@ -22,10 +22,10 @@ public class TransactionDatePicker extends DialogFragment
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        LocalDate last = vm.getLocalDateTime().toLocalDate();
+        final LocalDate last = vm.getLocalDateTime().toLocalDate();
 
-        DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, last.getYear(), last.getMonthValue(), last.getDayOfMonth());
-        DatePicker datePicker = dialog.getDatePicker();
+        final DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, last.getYear(), last.getMonthValue(), last.getDayOfMonth());
+        final DatePicker datePicker = dialog.getDatePicker();
 
         datePicker.setMaxDate(System.currentTimeMillis());
         return dialog;
@@ -38,7 +38,7 @@ public class TransactionDatePicker extends DialogFragment
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        LocalTime localTime = ZonedDateTime.now(ZoneOffset.UTC).with(LocalTime.MIDNIGHT).toLocalTime();
+        final LocalTime localTime = ZonedDateTime.now(ZoneOffset.UTC).with(LocalTime.MIDNIGHT).toLocalTime();
         vm.setLocalDateTime(LocalDateTime.of(LocalDate.of(year, month + 1, day), localTime));
     }
 }

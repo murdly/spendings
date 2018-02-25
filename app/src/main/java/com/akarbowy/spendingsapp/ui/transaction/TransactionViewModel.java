@@ -9,22 +9,17 @@ import android.arch.lifecycle.ViewModelProvider;
 import com.akarbowy.spendingsapp.App;
 import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
-import com.akarbowy.spendingsapp.data.entities.GroupedCategories;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.format.DateTimeFormatter;
 
-import java.util.List;
-
 public class TransactionViewModel extends ViewModel {
 
     public static final int UNDEFINED_TRANSACTION_ID = 0;
-    public final LiveData<List<GroupedCategories>> groupedCategories;
-    public final LiveData<List<CurrencyEntity>> currencies;
     public final LiveData<Transaction> transaction;
-    private TransactionRepository repository;
+    private final TransactionRepository repository;
     private MutableLiveData<Integer> transactionId = new MutableLiveData<>();
 
     private Double value = null;
@@ -36,8 +31,6 @@ public class TransactionViewModel extends ViewModel {
     public TransactionViewModel(TransactionRepository repository) {
         this.repository = repository;
 
-        groupedCategories = repository.getCategories();
-        currencies = repository.getCurrencies();
         transaction = Transformations.switchMap(transactionId, id -> {
             if (id == UNDEFINED_TRANSACTION_ID) {
                 setLocalDateTime(LocalDateTime.now(ZoneOffset.UTC));
@@ -99,7 +92,7 @@ public class TransactionViewModel extends ViewModel {
     }
 
     public void onSaveTransaction() {
-        TransactionEntity transaction = new TransactionEntity();
+        final TransactionEntity transaction = new TransactionEntity();
         transaction.transactionId = transactionId.getValue();
         transaction.categoryId = category.getValue().categoryEntityId;
         transaction.currencyId = currency.getValue().isoCode;

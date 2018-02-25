@@ -29,13 +29,15 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
         return new ViewHolder(inflater.inflate(R.layout.item_home_spendings, parent, false));
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        PeriodSpendingsData item = spendings.get(position);
+        final PeriodSpendingsData item = spendings.get(position);
+
         holder.valueView.setText(String.format("%1$s %2$s", AmountFormatUtil.format(item.total), item.symbol));
     }
 
