@@ -25,6 +25,10 @@
             android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="stateHidden">
         </activity>
+        <activity
+            android:name=".ui.importdata.ImportDataActivity"
+            android:label="@string/title_activity_import">
+        </activity>
     </application>
 
 </manifest>

@@ -94,17 +94,16 @@ public class RecentTransactionsAdapter extends PagedListAdapter<Transaction,
         }
 
         public void bindTo(Context context, final Transaction t, final OnItemClickListener onItemClickListener) {
-            TransactionEntity transaction = t.transaction;
+            final TransactionEntity transaction = t.transaction;
 
             iconView.setImageResource(ResourceUtil.getCategoryIconId(context, t.categoryGroup.groupName, t.category.categoryName));
 
             titleView.setText(transaction.title);
             titleView.setBackgroundColor(Color.TRANSPARENT);
 
-            String dateFormatted = transaction.date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            final String dateFormatted = transaction.date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 
-
-            String valueFormatted = String.format("- %1$.2f %2$s", transaction.value, t.currency.symbol);
+            final String valueFormatted = String.format("- %1$.2f %2$s", transaction.value, t.currency.symbol);
             valueView.setText(valueFormatted);
 
             if (transaction.deleted) {

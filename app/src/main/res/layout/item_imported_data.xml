@@ -4,72 +4,77 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="wrap_content"
     android:layout_marginBottom="4dp"
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginTop="4dp">
 
-    <ImageView
-        android:id="@+id/itemTransactionIcon"
+    <TextView
+        android:id="@+id/number"
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:tint="@color/colorAccent"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_category_transportation_railway"/>
+        tools:text="1"/>
 
     <TextView
-        android:id="@+id/itemTransactionTitle"
+        android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
         android:ellipsize="end"
-        android:maxLength="30"
         android:maxLines="1"
         android:textColor="@color/colorPrimaryText"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/itemTransactionValue"
-        app:layout_constraintStart_toEndOf="@+id/itemTransactionIcon"
+        app:layout_constraintEnd_toStartOf="@id/value"
+        app:layout_constraintStart_toEndOf="@+id/number"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="TransactioTransaction Transactiddddddonn"/>
 
     <TextView
-        android:id="@+id/itemTransactionValue"
+        android:id="@+id/subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/colorPrimaryText"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="- 207.83 $"/>
-
-    <TextView
-        android:id="@+id/itemTransactionSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginStart="16dp"
         android:textColor="@color/colorSecondaryText"
         android:textSize="12sp"
         android:textStyle="italic"
+        app:layout_constraintStart_toEndOf="@+id/number"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        tools:text="Transport, 12 października"/>
+
+    <Button
+        android:id="@+id/set_category_button"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:background="@null"
+        android:text="@string/import_label_set_category"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/itemTransactionIcon"
-        app:layout_constraintTop_toBottomOf="@+id/itemTransactionTitle"
-        tools:text="12 października, deleted"/>
+        app:layout_constraintStart_toStartOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/subtitle"
+        tools:text="Set Category"/>
+
+    <TextView
+        android:id="@+id/value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/title"
+        tools:text="- 207.83"/>
 </android.support.constraint.ConstraintLayout>

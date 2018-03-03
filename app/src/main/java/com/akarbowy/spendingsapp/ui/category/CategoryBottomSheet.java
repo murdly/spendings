@@ -1,8 +1,10 @@
-package com.akarbowy.spendingsapp.ui.transaction;
+package com.akarbowy.spendingsapp.ui.category;
 
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.akarbowy.spendingsapp.R;
+import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
 import com.akarbowy.spendingsapp.data.entities.GroupedCategories;
 import com.akarbowy.spendingsapp.ui.ResourceUtil;
@@ -32,7 +35,18 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
     RecyclerView categoriesListView;
 
     private SectionedRecyclerViewAdapter sectionAdapter;
-    private TransactionViewModel viewModel;
+
+    private Callback callback;
+
+    private CategoryViewModel viewModel;
+
+    public static CategoryBottomSheet newInstance(Bundle bundle) {
+
+        final CategoryBottomSheet fragment = new CategoryBottomSheet();
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
 
     @Nullable
     @Override
@@ -47,8 +61,25 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = ViewModelProviders.of(getActivity()).get(TransactionViewModel.class);
+        init();
+    }
 
+    private void init() {
+        initViewModel();
+
+        initAdapter();
+
+        bindCategories();
+    }
+
+    @NonNull
+    private void initViewModel() {
+        viewModel = ViewModelProviders.of(getActivity(),
+                new CategoryViewModel.Factory(AppDatabase.getInstance(getActivity())))
+                .get(CategoryViewModel.class);
+    }
+
+    private void initAdapter() {
         sectionAdapter = new SectionedRecyclerViewAdapter();
 
         final GridLayoutManager glm = new GridLayoutManager(getContext(), 4);
@@ -65,19 +96,36 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
         });
         categoriesListView.setLayoutManager(glm);
         categoriesListView.setAdapter(sectionAdapter);
+    }
 
-        viewModel.groupedCategories.observe(this, (groups) -> {
+    private void bindCategories() {
+        viewModel.categoriesByGroup.observe(this, (groups) -> {
             for (GroupedCategories g : groups) {
-                CategorySection section = new CategorySection(g.group.groupName, g.categories);
+                final CategorySection section = new CategorySection(g.group.groupName, g.categories);
                 sectionAdapter.addSection(section);
             }
             sectionAdapter.notifyDataSetChanged();
         });
     }
 
-    private void onCategoryChosen(CategoryEntity chosen) {
-        viewModel.setCategory(chosen);
+    @Override public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof Callback) {
+            callback = (Callback) context;
+        }
+    }
+
+    private void onCategoryChosen(CategoryEntity category) {
+        if (callback != null) {
+            callback.onCategoryChosen(getArguments(), category);
+        }
+
         dismiss();
+    }
+
+    public interface Callback {
+        void onCategoryChosen(Bundle bundle, CategoryEntity chosen);
     }
 
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
@@ -141,7 +189,7 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
             itemHolder.title.setText(item.categoryName);
 
             itemHolder.itemView.setOnClickListener(view -> {
-                int itemPosition = sectionAdapter.getPositionInSection(itemHolder.getLayoutPosition());
+                final int itemPosition = sectionAdapter.getPositionInSection(itemHolder.getLayoutPosition());
                 onCategoryChosen(items.get(itemPosition));
 
             });

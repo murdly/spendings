@@ -1,6 +1,7 @@
 package com.akarbowy.spendingsapp;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.Group;
 import android.support.v7.app.AlertDialog;
@@ -17,6 +18,7 @@ import com.akarbowy.spendingsapp.ui.OverviewViewModel;
 import com.akarbowy.spendingsapp.ui.PeriodSpendingsAdapter;
 import com.akarbowy.spendingsapp.ui.RecentTransactionsAdapter;
 import com.akarbowy.spendingsapp.ui.home.PeriodDatePicker;
+import com.akarbowy.spendingsapp.ui.importdata.ImportDataActivity;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionActivity;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionRepository;
 
@@ -162,11 +164,15 @@ public class MainActivity extends AppCompatActivity {
         startActivity(TransactionActivity.newAddIntent(this));
     }
 
+    @OnClick(R.id.home_import)
+    public void presentImportScreen() {
+        startActivity(new Intent(this, ImportDataActivity.class));
+    }
+
     public interface OnTransactionActionListener {
         void onEdit();
 
         void onDelete();
     }
-
 
 }
