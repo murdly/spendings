@@ -54,7 +54,7 @@ public class ImportViewModel extends ViewModel {
     private void onDataImported(List<String> data) {
         if (data != null && !data.isEmpty()) {
 
-            final List<? extends ImportSource> revolutData = RevolutSource.create(dataCurrency.getValue().isoCode, data.subList(0,3), true);
+            final List<? extends ImportSource> revolutData = RevolutSource.create(dataCurrency.getValue().isoCode, data, true);
 
             final List<ImportData> metaData = ImportData.Mapper.fromSource(revolutData);
 
