@@ -12,12 +12,16 @@
 
     <!--Import screen-->
     <string name="title_activity_import">Import</string>
-    <string name="import_button_file">Choose file</string>
+    <string name="import_button_next">Step %d of %d</string>
     <string name="import_button_save">Save</string>
+
+    <string name="import_step_source_title">Select a source file</string>
+    <string name="import_step_source_revolut">Revolut</string>
+    <string name="import_step_currency_title">Choose currency</string>
+    <string name="import_step_list_title">Set categories</string>
     <string name="import_label_set_category">Set category</string>
     <string name="import_label_currency">Currency</string>
     <!--end Import screen-->
-
 
 
     <!--Transaction screen-->

@@ -31,7 +31,7 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        return new ViewHolder(inflater.inflate(R.layout.item_home_spendings, parent, false));
+        return new ViewHolder(inflater.inflate(R.layout.home_item_spendings, parent, false));
     }
 
     @Override

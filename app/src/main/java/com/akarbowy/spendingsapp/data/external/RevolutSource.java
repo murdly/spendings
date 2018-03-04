@@ -2,6 +2,8 @@ package com.akarbowy.spendingsapp.data.external;
 
 import android.support.annotation.NonNull;
 
+import com.akarbowy.spendingsapp.ui.importdata.ImportSource;
+
 import java.util.ArrayList;
 import java.util.List;
 

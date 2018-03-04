@@ -43,7 +43,7 @@ public class ImportDataAdapter extends RecyclerView.Adapter<ImportDataAdapter.Vi
     @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        return new ImportDataAdapter.ViewHolder(inflater.inflate(R.layout.item_imported_data, parent, false));
+        return new ImportDataAdapter.ViewHolder(inflater.inflate(R.layout.import_item_data, parent, false));
     }
 
     @Override public void onBindViewHolder(ViewHolder holder, int position) {
