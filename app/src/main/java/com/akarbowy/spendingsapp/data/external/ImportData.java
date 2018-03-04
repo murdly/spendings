@@ -2,6 +2,7 @@ package com.akarbowy.spendingsapp.data.external;
 
 
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
+import com.akarbowy.spendingsapp.ui.importdata.ImportSource;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
