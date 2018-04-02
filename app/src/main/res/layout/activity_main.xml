@@ -106,6 +106,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:scrollbars="none"
         tools:visibility="gone"/>
 
     <include layout="@layout/home_empty_state_period_spendings"/>

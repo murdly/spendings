@@ -7,9 +7,9 @@ import android.os.AsyncTask;
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.Dictionaries;
 import com.akarbowy.spendingsapp.data.PredefinedData;
-import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 import com.akarbowy.spendingsapp.managers.PreferencesManager;
 import com.facebook.stetho.Stetho;
+import com.google.gson.Gson;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import timber.log.Timber;
@@ -18,7 +18,6 @@ import timber.log.Timber;
 public class App extends Application {
 
     public static Dictionaries.Currency DC = Dictionaries.Currency.GBP;
-    public static CurrencyEntity DEFAULT_CURRENCY = new CurrencyEntity(DC.symbol, DC.isoCode, DC.title);
 
     @Override
     public void onCreate() {
@@ -31,9 +30,9 @@ public class App extends Application {
             Timber.plant(new Timber.DebugTree());
         }
 
-        AppDatabase appDatabase = AppDatabase.getInstance(this);
+        final AppDatabase appDatabase = AppDatabase.getInstance(this);
 
-        PreferencesManager preferencesManager = new PreferencesManager(getApplicationContext());
+        final PreferencesManager preferencesManager = new PreferencesManager(getApplicationContext(), new Gson());
 
         if (!preferencesManager.isPredefinedDataLoaded()) {
             AsyncTask.execute(() -> {

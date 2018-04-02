@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.helpers.NoItemsHelper;
+import com.akarbowy.spendingsapp.managers.PreferencesManager;
+import com.akarbowy.spendingsapp.network.exchangerate.ExchangeRateService;
 import com.akarbowy.spendingsapp.ui.OverviewViewModel;
 import com.akarbowy.spendingsapp.ui.PeriodSpendingsAdapter;
 import com.akarbowy.spendingsapp.ui.RecentTransactionsAdapter;
@@ -21,6 +23,7 @@ import com.akarbowy.spendingsapp.ui.home.PeriodDatePicker;
 import com.akarbowy.spendingsapp.ui.importdata.ImportDataActivity;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionActivity;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionRepository;
+import com.google.gson.Gson;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.recent_list_empty_view)
     View emptyViewForRecentList;
 
-    private OverviewViewModel vm;
+    private OverviewViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +65,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        vm = ViewModelProviders.of(this,
-                new OverviewViewModel.Factory(new TransactionRepository(AppDatabase.getInstance(this))))
+        viewModel = ViewModelProviders.of(this,
+                new OverviewViewModel.Factory(new TransactionRepository(
+                        AppDatabase.getInstance(this),
+                        new PreferencesManager(getApplicationContext(), new Gson()),
+                        ExchangeRateService.getApi())))
                 .get(OverviewViewModel.class);
 
         setupOverview();
@@ -79,20 +85,20 @@ public class MainActivity extends AppCompatActivity {
         spendingsList.setAdapter(spendingsAdapter);
         new NoItemsHelper(emptyViewForSpendingsList).attachToRecyclerView(spendingsList);
 
-        vm.periodicByCurrency.observe(this, periodSpendings -> {
+        viewModel.periodicByCurrency.observe(this, periodSpendings -> {
             updatePeriodViews();
             spendingsAdapter.setItems(periodSpendings);
         });
     }
 
     private void updatePeriodViews() {
-        periodTitleView.setText(String.format("%s %s", vm.getSelectedPeriodTitle(), getString(R.string.home_period_arrow)));
+        periodTitleView.setText(String.format("%s %s", viewModel.getSelectedPeriodTitle(), getString(R.string.home_period_arrow)));
 
-        periodFromView.setText(vm.getPeriodFromTitle());
-        periodFromView.setEnabled(vm.isCustomPeriodSet());
-        periodGapView.setEnabled(vm.isCustomPeriodSet());
-        periodToView.setText(vm.getPeriodToTitle());
-        periodToView.setEnabled(vm.isCustomPeriodSet());
+        periodFromView.setText(viewModel.getPeriodFromTitle());
+        periodFromView.setEnabled(viewModel.isCustomPeriodSet());
+        periodGapView.setEnabled(viewModel.isCustomPeriodSet());
+        periodToView.setText(viewModel.getPeriodToTitle());
+        periodToView.setEnabled(viewModel.isCustomPeriodSet());
     }
 
     private void setupRecentTransactions() {
@@ -106,14 +112,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onDelete() {
-                vm.onDeleteTransaction(item.transaction);
+                viewModel.onDeleteTransaction(item.transaction);
             }
         }));
         recentTransactionsList.setLayoutManager(new LinearLayoutManager(this));
         recentTransactionsList.setAdapter(adapter);
         new NoItemsHelper(emptyViewForRecentList).attachToRecyclerView(recentTransactionsList);
 
-        vm.transactions.observe(this, adapter::setList);
+        viewModel.transactions.observe(this, adapter::setList);
     }
 
     /*
@@ -127,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Period")
                 .setItems(periodsTexts, (dialog, which) -> {
-                    vm.setPeriod(which);
+                    viewModel.setPeriod(which);
                     if (which == 3) {
                         customPeriodGroup.setVisibility(View.VISIBLE);
                     }

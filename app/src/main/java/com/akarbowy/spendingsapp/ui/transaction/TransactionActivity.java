@@ -16,8 +16,11 @@ import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.AppDatabase;
 import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
+import com.akarbowy.spendingsapp.managers.PreferencesManager;
+import com.akarbowy.spendingsapp.network.exchangerate.ExchangeRateService;
 import com.akarbowy.spendingsapp.ui.category.CategoryBottomSheet;
 import com.akarbowy.spendingsapp.ui.currency.CurrencyBottomSheet;
+import com.google.gson.Gson;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,7 +69,10 @@ public class TransactionActivity extends AppCompatActivity implements CategoryBo
 
     private void init() {
         viewModel = ViewModelProviders.of(this,
-                new TransactionViewModel.Factory(new TransactionRepository(AppDatabase.getInstance(this))))
+                new TransactionViewModel.Factory(new TransactionRepository(
+                        AppDatabase.getInstance(this),
+                        new PreferencesManager(getApplicationContext(), new Gson()),
+                        ExchangeRateService.getApi())))
                 .get(TransactionViewModel.class);
 
         validator = new TransactionDataValidator(new TextInputEditText[]{

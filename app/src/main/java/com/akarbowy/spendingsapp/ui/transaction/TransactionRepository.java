@@ -6,24 +6,34 @@ import android.arch.lifecycle.Transformations;
 import android.arch.paging.PagedList;
 import android.os.AsyncTask;
 
+import com.akarbowy.spendingsapp.App;
 import com.akarbowy.spendingsapp.data.AppDatabase;
-import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
-import com.akarbowy.spendingsapp.data.entities.GroupedCategories;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendingsData;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
+import com.akarbowy.spendingsapp.managers.PreferencesManager;
+import com.akarbowy.spendingsapp.network.exchangerate.ExchangeRateResponse;
+import com.akarbowy.spendingsapp.network.exchangerate.ExchangeRateService;
 import com.akarbowy.spendingsapp.ui.SpendingsPeriod;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import timber.log.Timber;
 
 public class TransactionRepository {
 
-
     private final AppDatabase database;
 
-    public TransactionRepository(AppDatabase database) {
+    private final PreferencesManager preferencesManager;
+
+    private final ExchangeRateService.Api exchangeRateService;
+
+    public TransactionRepository(AppDatabase database, PreferencesManager preferencesManager, ExchangeRateService.Api exchangeRateService) {
         this.database = database;
+        this.preferencesManager = preferencesManager;
+        this.exchangeRateService = exchangeRateService;
     }
 
     public LiveData<Transaction> loadTransaction(int id) {
@@ -40,8 +50,41 @@ public class TransactionRepository {
     }
 
     public LiveData<List<PeriodSpendingsData>> getExpensesInPeriod(MutableLiveData<SpendingsPeriod> period, SpendingsPeriod.Type type) {
+        final String baseCurrency = App.DC.isoCode;
+
+        exchangeRateService.getExchangeRates(baseCurrency).enqueue(new Callback<ExchangeRateResponse>() {
+            @Override public void onResponse(Call<ExchangeRateResponse> call, Response<ExchangeRateResponse> response) {
+                if (response.isSuccessful()) {
+                    preferencesManager.setLatestExchangeRates(response.body());
+
+                    Timber.i("exchange rates success, %s", response.raw());
+                }
+            }
+
+            @Override public void onFailure(Call<ExchangeRateResponse> call, Throwable t) {
+                Timber.i(t, "exchange rates failure");
+            }
+        });
+
         return Transformations.switchMap(period, input -> {
-            LiveData<List<PeriodSpendingsData>> result = database.transactionDao().byCurrencyBetween(input.from(), input.to());
+
+            LiveData<List<PeriodSpendingsData>> result =
+                    database.transactionDao().byCurrencyBetween(input.from(), input.to());
+
+            final ExchangeRateResponse exchangeRate = preferencesManager.getLatestExchangeRates();
+            if (exchangeRate != null && exchangeRate.getBase().equals(baseCurrency)) {
+
+                result = Transformations.map(result, spendings -> {
+                    for (PeriodSpendingsData spending : spendings) {
+                        final double rate = exchangeRate.getRate(spending.isoCode);
+
+                        spending.estimation = spending.total * rate;
+                    }
+
+                    return spendings;
+                });
+            }
+
             return result;
 
             //TODO feature-1: merge with previous month to make comparision possible later on

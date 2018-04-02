@@ -14,8 +14,11 @@ import android.widget.Toast;
 
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.AppDatabase;
+import com.akarbowy.spendingsapp.managers.PreferencesManager;
+import com.akarbowy.spendingsapp.network.exchangerate.ExchangeRateService;
 import com.akarbowy.spendingsapp.ui.importdata.steps.StepPage;
 import com.akarbowy.spendingsapp.ui.transaction.TransactionRepository;
+import com.google.gson.Gson;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,7 +54,10 @@ public class ImportDataActivity extends AppCompatActivity {
     private void initViewModel() {
 
         final TransactionRepository transactionRepository =
-                new TransactionRepository(AppDatabase.getInstance(this));
+                new TransactionRepository(
+                        AppDatabase.getInstance(this),
+                        new PreferencesManager(getApplicationContext(), new Gson()),
+                        ExchangeRateService.getApi());
 
         viewModel = ViewModelProviders.of(this,
                 new ImportViewModel.Factory(transactionRepository)).get(ImportViewModel.class);

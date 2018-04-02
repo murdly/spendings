@@ -13,38 +13,55 @@
     app:cardUseCompatPadding="true"
     app:contentPadding="4dp">
 
-    <TextView
-        android:id="@+id/spendings_card_value"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:textSize="35sp"
-        android:maxLines="1"
-        android:gravity="center"
-        android:textColor="@color/colorText"
-        tools:text="101k $"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/spendings_card_value"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="@color/colorText"
+            android:textSize="35sp"
+            tools:text="101k $"/>
+
+        <TextView
+            android:id="@+id/spendings_card_approx"
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:alpha="0.8"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="@color/colorText"
+            android:textSize="12sp"
+            tools:text="~ 20$"/>
+    </LinearLayout>
 
     <!--TODO feature-1 i'm not gonna work on this feature yer-->
     <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="30dp"-->
-        <!--android:layout_gravity="bottom"-->
-        <!--android:gravity="center_vertical"-->
-        <!--android:orientation="horizontal">-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="30dp"-->
+    <!--android:layout_gravity="bottom"-->
+    <!--android:gravity="center_vertical"-->
+    <!--android:orientation="horizontal">-->
 
-        <!--<ImageView-->
-            <!--android:id="@+id/spendings_card_change_icon"-->
-            <!--android:layout_width="16dp"-->
-            <!--android:layout_height="16dp"-->
-            <!--app:srcCompat="@drawable/ic_trending_up_black_18dp"/>-->
+    <!--<ImageView-->
+    <!--android:id="@+id/spendings_card_change_icon"-->
+    <!--android:layout_width="16dp"-->
+    <!--android:layout_height="16dp"-->
+    <!--app:srcCompat="@drawable/ic_trending_up_black_18dp"/>-->
 
-        <!--<TextView-->
-            <!--android:id="@+id/spendings_card_change_value"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginLeft="4dp"-->
-            <!--android:layout_marginStart="4dp"-->
-            <!--android:textColor="@color/colorPrimaryText"-->
-            <!--tools:text="25%"/>-->
+    <!--<TextView-->
+    <!--android:id="@+id/spendings_card_change_value"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginLeft="4dp"-->
+    <!--android:layout_marginStart="4dp"-->
+    <!--android:textColor="@color/colorPrimaryText"-->
+    <!--tools:text="25%"/>-->
     <!--</LinearLayout>-->
 
 

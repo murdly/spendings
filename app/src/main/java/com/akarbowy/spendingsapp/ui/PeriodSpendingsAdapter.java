@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.akarbowy.spendingsapp.App;
 import com.akarbowy.spendingsapp.helpers.AmountFormatUtil;
 import com.akarbowy.spendingsapp.R;
 import com.akarbowy.spendingsapp.data.entities.PeriodSpendingsData;
@@ -38,7 +39,7 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PeriodSpendingsData item = spendings.get(position);
 
-        holder.valueView.setText(String.format("%1$s %2$s", AmountFormatUtil.format(item.total), item.symbol));
+        holder.bind(item);
     }
 
     @Override
@@ -50,6 +51,8 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
 
         @BindView(R.id.spendings_card_value)
         TextView valueView;
+        @BindView(R.id.spendings_card_approx)
+        TextView approxValueView;
 
         /*TODO feature-1
         @BindView(R.id.spendings_card_change_icon)
@@ -60,6 +63,17 @@ public class PeriodSpendingsAdapter extends RecyclerView.Adapter<PeriodSpendings
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+
+        public void bind(PeriodSpendingsData item) {
+
+            final String valueFormatted = String.format("%1$s %2$s", AmountFormatUtil.format(item.total), item.symbol);
+            valueView.setText(valueFormatted);
+
+            final String approxValueFormatted = String.format("≈ %1$s %2$s", AmountFormatUtil.format(item.estimation), App.DC.symbol);
+            approxValueView.setText(approxValueFormatted);
+            approxValueView.setVisibility(item.estimation > 0 ? View.VISIBLE : View.INVISIBLE);
+
         }
     }
 }
