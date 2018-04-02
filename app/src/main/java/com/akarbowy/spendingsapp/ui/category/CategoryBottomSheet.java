@@ -121,6 +121,12 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment {
             callback.onCategoryChosen(getArguments(), category);
         }
 
+        if (getTargetFragment() != null) {
+            if (getTargetFragment() instanceof Callback) {
+                ((Callback) getTargetFragment()).onCategoryChosen(getArguments(), category);
+            }
+        }
+
         dismiss();
     }
 

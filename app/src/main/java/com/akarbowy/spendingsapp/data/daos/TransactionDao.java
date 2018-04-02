@@ -27,13 +27,13 @@ public interface TransactionDao {
     @Query("SELECT * FROM transactions ORDER BY date ASC")
     LiveData<List<TransactionEntity>> all();
 
-    @Query("SELECT currencies.name, currencies.symbol, SUM (transactions.value) AS total FROM transactions " +
+    @Query("SELECT currencies.name, currencies.symbol, currencies.isoCode, SUM (transactions.value) AS total FROM transactions " +
             "LEFT JOIN currencies ON transactions.currency_id = currencies.isoCode " +
             "WHERE transactions.date between :from and :to AND transactions.deleted = 0 " +
             "GROUP BY transactions.currency_id ORDER BY total DESC")
     LiveData<List<PeriodSpendingsData>> byCurrencyBetween(LocalDateTime from, LocalDateTime to);
 
-    @Query("SELECT currencies.name, currencies.symbol, SUM (transactions.value) AS total FROM transactions " +
+    @Query("SELECT currencies.name, currencies.symbol, currencies.isoCode, SUM (transactions.value) AS total FROM transactions " +
             "LEFT JOIN currencies ON transactions.currency_id = currencies.isoCode " +
             "GROUP BY transactions.currency_id ORDER BY total DESC")
     LiveData<List<PeriodSpendingsData>> byCurrency();

@@ -52,7 +52,7 @@ public class RecentTransactionsAdapter extends PagedListAdapter<Transaction,
     @Override
     public TransactionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.item_home_transaction_recent, parent, false);
+        View view = inflater.inflate(R.layout.home_item_transaction_recent, parent, false);
 
         return new TransactionViewHolder(view);
     }

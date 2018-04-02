@@ -2,6 +2,8 @@ package com.akarbowy.spendingsapp.data.external;
 
 import android.support.annotation.NonNull;
 
+import com.akarbowy.spendingsapp.ui.importdata.ImportSource;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,21 +45,21 @@ public class RevolutSource implements ImportSource {
 
     private RevolutSource(String currencyCode, String[] data) {
         this.currencyCode = currencyCode;
-        this.completedDate = data[0].trim();
-        this.reference = data[1].trim();
-        this.paidOut = data[2].trim().isEmpty() ? 0d : Double.valueOf(data[2]);
-        this.paidIn = data[3].trim().isEmpty() ? 0d : Double.valueOf(data[3]);
-        this.exchangeOut = data[4].trim().isEmpty() ? 0d : Double.valueOf(data[4]);
-        this.exchangeIn = data[5].trim().isEmpty() ? 0d : Double.valueOf(data[5]);
-        this.balance = data[6].trim().isEmpty() ? 0d : Double.valueOf(data[6]);
-        this.category = data[7].trim();
+        this.completedDate = data[0];
+        this.reference = data[1];
+        this.paidOut = data[2].isEmpty() ? 0d : Double.valueOf(data[2]);
+        this.paidIn = data[3].isEmpty() ? 0d : Double.valueOf(data[3]);
+        this.exchangeOut = data[4].isEmpty() ? 0d : Double.valueOf(data[4]);
+        this.exchangeIn = data[5].isEmpty() ? 0d : Double.valueOf(data[5]);
+        this.balance = data[6].isEmpty() ? 0d : Double.valueOf(data[6]);
+        this.category = data[7];
     }
 
     private static RevolutSource createRevolutSource(String currencyCode, String[] data) {
         return new RevolutSource(currencyCode, data);
     }
 
-    public static List<RevolutSource> create(String currencyCode, List<String> entries) {
+    private static List<RevolutSource> create(String currencyCode, List<String> entries) {
         //first line consists entry pattern
         entries.remove(0);
 
@@ -65,6 +67,11 @@ public class RevolutSource implements ImportSource {
 
         for (int i = 0; i < entries.size(); i++) {
             final String[] entry = entries.get(i).split(";");
+
+            for (int k = 0; k < entry.length; k++) {
+                entry[k] = entry[k].trim().replaceAll("\"", "");
+
+            }
 
             data.add(createRevolutSource(currencyCode, entry));
         }

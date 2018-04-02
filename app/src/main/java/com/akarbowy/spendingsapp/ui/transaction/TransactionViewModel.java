@@ -6,7 +6,6 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
-import com.akarbowy.spendingsapp.App;
 import com.akarbowy.spendingsapp.data.entities.CategoryEntity;
 import com.akarbowy.spendingsapp.data.entities.CurrencyEntity;
 import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
@@ -14,6 +13,8 @@ import com.akarbowy.spendingsapp.data.entities.TransactionEntity;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.format.DateTimeFormatter;
+
+import static com.akarbowy.spendingsapp.App.DC;
 
 public class TransactionViewModel extends ViewModel {
 
@@ -33,8 +34,12 @@ public class TransactionViewModel extends ViewModel {
 
         transaction = Transformations.switchMap(transactionId, id -> {
             if (id == UNDEFINED_TRANSACTION_ID) {
+
                 setLocalDateTime(LocalDateTime.now(ZoneOffset.UTC));
-                setCurrency(App.DEFAULT_CURRENCY);
+
+                final CurrencyEntity defaultCurrency = new CurrencyEntity(DC.symbol, DC.isoCode, DC.title);
+                setCurrency(defaultCurrency);
+
                 setName("Transaction");
                 return null;
             }
