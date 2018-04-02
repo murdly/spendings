@@ -33,14 +33,6 @@ public class RevolutSource implements ImportSource {
 
     private double paidOut;
 
-    private double paidIn;
-
-    private double exchangeOut;
-
-    private double exchangeIn;
-
-    private double balance;
-
     private String category;
 
     private RevolutSource(String currencyCode, String[] data) {
@@ -48,11 +40,7 @@ public class RevolutSource implements ImportSource {
         this.completedDate = data[0];
         this.reference = data[1];
         this.paidOut = data[2].isEmpty() ? 0d : Double.valueOf(data[2]);
-        this.paidIn = data[3].isEmpty() ? 0d : Double.valueOf(data[3]);
-        this.exchangeOut = data[4].isEmpty() ? 0d : Double.valueOf(data[4]);
-        this.exchangeIn = data[5].isEmpty() ? 0d : Double.valueOf(data[5]);
-        this.balance = data[6].isEmpty() ? 0d : Double.valueOf(data[6]);
-        this.category = data[7];
+        this.category = data[3];
     }
 
     private static RevolutSource createRevolutSource(String currencyCode, String[] data) {

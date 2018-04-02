@@ -78,7 +78,7 @@ public class TransactionRepository {
                     for (PeriodSpendingsData spending : spendings) {
                         final double rate = exchangeRate.getRate(spending.isoCode);
 
-                        spending.estimation = spending.total * rate;
+                        spending.estimation = rate == 0 ? spending.total : spending.total / rate;
                     }
 
                     return spendings;
